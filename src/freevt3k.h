@@ -10,8 +10,6 @@
    You should have received a copy of the GNU General Public License
    along with this file; if not, write to the Free Software Foundation,
    Inc., 675 Mass Ave, Cambridge MA 02139, USA. 
-
-   Original: Bruce Toback, 22 MAR 96
 */
 
 #ifndef _FREEVT3K_H

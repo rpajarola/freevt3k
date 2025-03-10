@@ -1,10 +1,3 @@
-/*
- *    $Log: hpterm.c,v $
- *    Revision 1.1  2003/03/14 16:28:44  randy
- *    First import
- *
- */
-
 /* Copyright (C) 1996 Jeff Moffatt
 
    xhpterm: hpterm emulator with imbedded freevt3k
@@ -13,55 +6,6 @@
    You should have received a copy of the GNU General Public License
    along with this file; if not, write to the Free Software Foundation,
    Inc., 675 Mass Ave, Cambridge MA 02139, USA.
-
-   Original: Jeff Moffatt, 2 APR 96
-   
-   19-DEC-2000
-   Added (per Kai Wiechen) code to skip over ESC+")"+"x" and
-   ESC+"("+"x" sequences
-
-   16-DEC-2000
-   Translation table
-
-   2000-AUG-31
-   Memory Lock                                Done
-   Fixes for Block mode                       Done
-   Improve keyboard mapping(Alt-M, etc)       Done
-   Font metrics all done in X11               Done
-   Hostname displayed in window title         Done
-   Version string in title                    Done
-   Dump screen contents to file               Done
-   
-
-   21-JAN-99
-   Added -termid to provide alternative to X-hpterm value
-
-   15-JAN-99
-   New Display functions code
-   In hpterm_rxfunc(), do character tests using signed ints, not chars
-
-   9-MAY-96
-   Status readbacks (Esc ^, Esc ~)            Done
-   DC1-DC2-DC1 trigger                        Done
-   Obey straps G and H                        Done
-   Block mode                                 Done
-   Format mode                                Done
-   Modify Mode                                Done
-   Enter key                                  Done
-   Send Display command (Esc d)               Done
-   Fix function key programming               Done
-   Function key readback (Esc j Esc d Esc k)  Done
-   Use mouse to press function keys           Done
-   Insert character mode                      Done
-   Fix escape code parser                     Done
-   Fix break key                              Done
-   SPOW(B) latch                              Done
-   Send Cursor Position mode                  Done
-   Relative cursor positioning                Done
-   Auto exit when connection closes           Done
-   Insert character during format mode        Done
-   Defining form with FORMSPEC doesn't work   Done
-   Delete character (Esc P)                   Done
 
    Things to do:
 
@@ -96,21 +40,11 @@
 #include "conmgr.h"
 #include "x11glue.h"
 #include "freevt3k.h"
-/*******************************************************************/
-/* Moved to Makefile.  12/9/97 rm
-   #define SHOW_DC1_COUNT 1
-   #define DEBUG_BREAK 0
-   #define IGNORE_KEYBOARD_LOCK 1
-   #define IGNORE_USER_SYSTEM_LOCK 1
-   #define DEBUG_BLOCK_MODE 1
- */
-/*******************************************************************/
-#define strdup(x) (strcpy(malloc(strlen(x)+1),(x)))
-/*******************************************************************/
+
 extern struct conmgr *con;
 extern int logging;
 extern char *termid;		/*990121 */
-/*******************************************************************/
+
 #define ASC_ENQ 0x05
 #define ASC_ACK 0x06
 #define ASC_BEL 0x07
@@ -121,6 +55,7 @@ extern char *termid;		/*990121 */
 #define ASC_DC1 0x11
 #define ASC_DC2 0x12
 #define ASC_ESC 0x1B
+
 static void do_function_button (int);	/* Forward */
 static void update_labels (void);	/* Forward */
 static void hpterm_rxchar (char);	/* Forward */

@@ -1,11 +1,4 @@
 /*
- *    $Log: x11glue.c,v $
- *    Revision 1.1  2003/03/14 16:28:44  randy
- *    First import
- *
- */
-
-/*
  * x11glue.c  --  X11 window interface
  *
  * Derived from O'Reilly and Associates example 'basicwin.c'

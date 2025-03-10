@@ -51,6 +51,32 @@ Wed Jan 27 20:45:44 2021 -0800 <fmc@reanimators.org>
 	* x11glue.c: add -p argument for NS VT port (classic 3000 uses port 1537)
 	* Makefile, tty.c: build on macOS 10.15
 
+2003-03-14 Randy Medd <randy@telamon.com>
+	* x11glue.c
+
+2000-12-19 Jeff Moffatt
+	* Added (per Kai Wiechen) code to skip over ESC+")"+"x" and ESC+"("+"x" sequences
+
+
+2000-12-16 Jeff Moffatt
+	* added translation table
+
+2000-08-31 Jeff Moffatt
+	* Memory Lock
+	* Fixes for Block mode
+	* Improve keyboard mapping(Alt-M, etc)
+	* Font metrics all done in X11
+	* Hostname displayed in window title
+	* Version string in title
+	* Dump screen contents to file
+
+1999-01-21 Jeff Moffatt
+	* Added -termid to provide alternative to X-hpterm value
+
+1999-01-15 Jeff Moffatt
+	* New Display functions code
+	* In hpterm_rxfunc(), do character tests using signed ints, not chars
+
 Mon Jun  9 12:25:32 1997    <randy@hp425t.telamon.com>
 
 	* vtconn.c: Fix numerous missing htons/htonl calls
@@ -59,6 +85,9 @@ Mon Jun  9 12:25:32 1997    <randy@hp425t.telamon.com>
 1999-01-13    <randy@telamon.com>
 
 	* All: Change to config.h configurations
+
+1997-01-07 Stan Sieler <sieler@allegro.com>
+	* (freevt3k.c)
 
 Tue Jan  7 08:09:44 1997    <randy@telamon.com>
 
@@ -69,4 +98,60 @@ Tue Jan  7 08:09:44 1997    <randy@telamon.com>
 	* x11glue.c:  Added Logit routine
 	* hpterm.c:   Added code to implement Device Control toggle of logging
 	* freevt3k.c: made "-li, -lo, -lio" without a "-f" log to stdout (per vt3k)
+
+1996-05-09 Jeff Moffatt
+	* Status readbacks (Esc ^, Esc ~)
+	* DC1-DC2-DC1 trigger
+	* Obey straps G and H
+	* Block mode
+	* Format mode
+	* Modify Mode
+	* Enter key
+	* Send Display command (Esc d)
+	* Fix function key programming
+	* Function key readback (Esc j Esc d Esc k)
+	* Use mouse to press function keys
+	* Insert character mode
+	* Fix escape code parser
+	* Fix break key
+	* SPOW(B) latch
+	* Send Cursor Position mode
+	* Relative cursor positioning
+	* Auto exit when connection closes
+	* Insert character during format mode
+	* Defining form with FORMSPEC doesn't work
+	* Delete character (Esc P)
+
+1996-04-02 Jeff Moffatt
+	* hpterm.c
+	* vtconn.c
+
+1996-03-31 Jeff Moffatt <jeff@taurus.com>
+	* vt3kglue.c
+	* vt3kglue.h
+
+1996-03-28 Randy Medd <randy@telamon.com>
+	* freevt3k.c
+	* vt3kglue.c
+	* vt3kglue.h
+	* vtconn.c
+	* vt.h
+
+1996-03-27 Dan Hollis <dhollis@pharmcomp.com>
+	* freevt3k.c
+	* vt3kglue.c
+	* vt3kglue.h
+	* vt.h
+
+1996-03-22 Bruce Toback
+	* freevt3k.c
+	* freevt3k.h
+	* vt3kglue.c
+	* vt3kglue.h
+	* vtconn.c
+	* vtconn.h
+	* vt.h
+
+1994-04-12
+	* timers.c
 

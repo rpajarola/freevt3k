@@ -1,7 +1,3 @@
-/*
- * @(#) timers.c: 94/04/12-07:17:58
- */
-
 #include <stdint.h>
 #include <sys/time.h>
 

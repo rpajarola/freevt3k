@@ -1,12 +1,4 @@
 /***************************************************************/
-/*
-**  HPUX
-*/
-#define _INCLUDE_HPUX_SOURCE 1
-#define _INCLUDE_POSIX_SOURCE 1
-#define _INCLUDE_XOPEN_SOURCE 1
-#define _INCLUDE_XOPEN_SOURCE_EXTENDED 1
-/***************************************************************/
 #include "config.h"
 #include <errno.h>
 #include <ctype.h>
