@@ -1,6 +1,16 @@
 /*
    **  hpterm.h  --  Header file for HP terminal emulator
  */
+
+#define SHOW_DC1_COUNT 1
+#define DEBUG_BREAK 0
+#define DEBUG_BLOCK_MODE 0
+
+#define IGNORE_KEYBOARD_LOCK 1
+#define IGNORE_USER_SYSTEM_LOCK 1
+
+#define MEMLOCK_2000
+
 /*********************************************************************/
 struct row
 {
