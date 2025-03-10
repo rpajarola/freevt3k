@@ -1259,7 +1259,7 @@ int main(int argc, char *argv[])
     *log_file = NULL,
     *ptr;
 
-  version_id = strpbrk(Sccsid, ":")+2;
+  version_id = VERSION_ID;
 
   if (argc < 2)
     {

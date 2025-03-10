@@ -23,6 +23,8 @@ with FreeVT3k. If not, see <https://www.gnu.org/licenses/>.
 #ifndef _FREEVT3K_H
 #define _FREEVT3K_H
 
+#define VERSION_ID "1.0"
+
 #include "typedef.h"
 
 #define LOG_INPUT		(0x01)
