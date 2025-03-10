@@ -1,4 +1,6 @@
-AM_CFLAGS = --pedantic -Wall -O2 \
+#AM_CFLAGS = -Wall -Werror --pedantic -O2
+
+AM_CFLAGS = -O2 \
 	@X_CFLAGS@ \
 	-DSHOW_DC1_COUNT=1 \
 	-DDEBUG_BREAK=0 \
