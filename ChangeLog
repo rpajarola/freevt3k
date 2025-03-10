@@ -1,3 +1,8 @@
+Sun Mar  9 08:17:27 PM PDT 2025 <rp@servium.ch>
+
+	* remove legacy build infrastructure
+	* autotool-ize
+
 Wed Jul 13 14:10:10 2022 -0700 <fmc@reanimators.org>
 
 	* freevt3k.c, x11glue.c: version B.00.A0
