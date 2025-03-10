@@ -14,8 +14,6 @@
 
 @SET_MAKE@
 
-#AM_CFLAGS = -Wall -Werror --pedantic -O2
-
 VPATH = @srcdir@
 am__is_gnu_make = { \
   if test -z '$(MAKELEVEL)'; then \
@@ -277,15 +275,9 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-AM_CFLAGS = -O2 \
-	@X_CFLAGS@ \
-	-DSHOW_DC1_COUNT=1 \
-	-DDEBUG_BREAK=0 \
-	-DIGNORE_KEYBOARD_LOCK=1 \
-	-DIGNORE_USER_SYSTEM_LOCK=1 \
-	-DDEBUG_BLOCK_MODE=1 \
-	-DMEMLOCK_2000
 
+#AM_CFLAGS = -Wall -Werror --pedantic -O2 @X_CFLAGS@
+AM_CFLAGS = -O2 @X_CFLAGS@
 xhpterm_LDADD = @X_LIBS@ -lX11
 xhpterm_CFLAGS = -DXHPTERM $(AM_CFLAGS)
 freevt3k_SOURCES = dumpbuf.c dumpbuf.h freevt3k.c freevt3k.h hpvt100.c hpvt100.h timers.c timers.h typedef.h vmstypes.h vtconn.c vtconn.h vt.h
