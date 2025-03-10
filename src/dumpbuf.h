@@ -1,1 +1,1 @@
-void DumpBuffer(void*, long, char*);
+void DumpBuffer(void *buf, long buf_len, char *dump_id);
