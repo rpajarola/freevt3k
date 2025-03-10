@@ -25,6 +25,7 @@ with FreeVT3k. If not, see <https://www.gnu.org/licenses/>.
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
+#include <stdbool.h>
 #include <ctype.h>
 #include <sys/types.h>
 #include <sys/socket.h>

@@ -79,7 +79,6 @@ with FreeVT3k. If not, see <https://www.gnu.org/licenses/>.
 #include "x11glue.h"
 #include "conmgr.h"
 #include "hpterm.h"
-#include "typedef.h"
 #include "vtconn.h"
 #include "terminal.bm"
 

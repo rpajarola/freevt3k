@@ -27,6 +27,7 @@ with FreeVT3k. If not, see <https://www.gnu.org/licenses/>.
 #include <stddef.h>
 #include <stdlib.h>
 #include <stdarg.h>
+#include <stdbool.h>
 #include <ctype.h>
 #include <sys/types.h>
 #include <string.h>
@@ -57,7 +58,6 @@ typedef struct termio TERMIO, *PTERMIO;
 # endif
 #endif
 
-#include "typedef.h"
 #include "vt.h"
 #include "freevt3k.h"
 #include "hpvt100.h"

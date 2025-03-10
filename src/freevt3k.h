@@ -25,8 +25,6 @@ with FreeVT3k. If not, see <https://www.gnu.org/licenses/>.
 
 #define VERSION_ID "1.0"
 
-#include "typedef.h"
-
 #define LOG_INPUT		(0x01)
 #define LOG_OUTPUT		(0x02)
 #define LOG_PREFIX              (0x04)

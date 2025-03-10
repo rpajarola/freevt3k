@@ -27,6 +27,7 @@ with FreeVT3k. If not, see <https://www.gnu.org/licenses/>.
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <stdarg.h>
 #include <string.h>
 #include <errno.h>
@@ -40,7 +41,6 @@ with FreeVT3k. If not, see <https://www.gnu.org/licenses/>.
 #include <sys/time.h>
 #include <signal.h>
 
-#include "typedef.h"
 #include "vt.h"
 #include "freevt3k.h"
 #include "vtconn.h"
