@@ -9,3 +9,4 @@ distclean-local:
 
 maintainerclean-local:
 	autoreconf -i
+	automake --add-missing -c
