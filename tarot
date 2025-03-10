@@ -1,7 +1,0 @@
-#!/bin/sh
-#
-tar -cvf freevt3k.tar *.[ch] Makefile Makefile.vms \
-   tools/*.[ch] tools/Makefile \
-   xhpterm/*.[ch] xhpterm/Makefile xhpterm/terminal.bm \
-   tarot
-compress freevt3k.tar
