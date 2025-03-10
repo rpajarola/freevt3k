@@ -87,38 +87,13 @@ static char const rcsid[] = "$Id: hpterm.c,v 1.1 2003/03/14 16:28:44 randy Exp $
    Keyboard lock
 
  */
-#ifdef VMS
-#  include <types.h>
-#  include <stdio.h>
-#  include <unixio.h>
-#  include <string.h>
-#  include <stdlib.h>
-#  include <time.h>
-#  include <timeb.h>
-#  include <stdarg.h>
-#  include <ctype.h>
-#  include <errno.h>
-#  include <limits.h>
-#  include <file.h>
-#  include <signal.h>
-#  include <assert.h>
-#  include <iodef.h>
-#  include <stsdef.h>
-#  include <socket.h>
-#  include <in.h>
-#  include <netdb.h>
-#  include <inet.h>
-#  include <lib$routines.h>
-#  include <starlet.h>
-#  include <ucx$inetdef.h>
-#else
-#  include "config.h"
+#include "config.h"
 
-#  include <string.h>
-#  include <stdlib.h>
-#  include <stdint.h>
-#  include <stdbool.h>
-#endif
+#include <string.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <stdbool.h>
+
 #include "hpterm.h"
 #include "conmgr.h"
 #include "x11glue.h"

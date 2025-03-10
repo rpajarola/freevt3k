@@ -11,107 +11,48 @@
    Additional: Dan Hollis <dhollis@pharmcomp.com>, 27 MAR 96
                Randy Medd <randy@telamon.com>, 28 MAR 96
 	       Stan Sieler <sieler@allegro.com>, 1997-01-07
-
-   Platforms:	HP-UX 9.04 (9000/807)
-   		HP-UX 9.10 (9000/425)
-		HP-UX 10.10 (9000/859)
-		AIX 3.2, 4.1
-		Solaris 2.4
-		SunOS 4.1.3
-		Linux 1.1.59, 1.3.83, 2.0.0
-		SCO 3.2
-		AlphaOSF 3.2
-		AlphaVMS 6.2
-		VaxVMS 6.2
-		IRIX 5.3
-		FreeBSD 2.1.0
 */
 
 char
 	*Sccsid = "@(#) freevt3k.c: B.00.A0";
 
-#ifdef VMS
-#  include <types.h>
-#  include <stdio.h>
-#  include <unixio.h>
-#  include <string.h>
-#  include <stdlib.h>
-#  include <time.h>
-#  include <timeb.h>
-#  include <stdarg.h>
-#  include <ctype.h>
-#  include <errno.h>
-#  include <limits.h>
-#  include <file.h>
-#  include <signal.h>
-#  include <assert.h>
-#  include <iodef.h>
-#  include <stsdef.h>
-#  include <socket.h>
-#  include <in.h>
-#  include <netdb.h>
-#  include <inet.h>
-#  include <lib$routines.h>
-#  include <starlet.h>
-#  include <ucx$inetdef.h>
-#else
-#  include "config.h"
-#  ifdef HPUX
-#    ifndef _HPUX_SOURCE
-#      define _HPUX_SOURCE		(1)
-#    endif
-#    ifndef _POSIX_SOURCE
-#      define _POSIX_SOURCE		(1)
-#    endif
-#  endif
-#  ifdef SCO
-#    ifndef M_UNIX
-#      define M_UNIX			(1)
-#    endif
-#  endif
-#  include <sys/types.h>
-#  include <unistd.h>
-#  include <stdio.h>
-#  include <stddef.h>
-#  include <stdlib.h>
-#  include <stdarg.h>
-#  include <ctype.h>
-#  include <sys/types.h>
-#  include <string.h>
-#  include <errno.h>
-#  include <sys/socket.h>
-#  include <netinet/in.h>
-#  include <arpa/inet.h>
-#  include <netdb.h>
-#  include <fcntl.h>
-#  ifdef HAVE_TERMIOS_H
-#    include <termios.h>
+#include "config.h"
+#include <sys/types.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <stddef.h>
+#include <stdlib.h>
+#include <stdarg.h>
+#include <ctype.h>
+#include <sys/types.h>
+#include <string.h>
+#include <errno.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <fcntl.h>
+#ifdef HAVE_TERMIOS_H
+# include <termios.h>
 typedef struct termios TERMIO, *PTERMIO;
-#  else
-#    include <termio.h>
+#else
+# include <termio.h>
 typedef struct termio TERMIO, *PTERMIO;
-#  endif
-#  ifdef HAVE_SYS_SELECT_H
-#    include <sys/select.h>
-#  endif
-#  ifdef TIME_WITH_SYS_TIME
-#    include <sys/time.h>
-#    include <time.h>
-#  else
-#    ifdef HAVE_SYS_TIME_H
-#      include <sys/time.h>
-#    else
-#      include <time.h>
-#    endif
-#  endif
-#  if defined(WINNT)
-#    include <sys/select.h>
-#    define SHORT_GETTIMEOFDAY	(1)
-#pragma warning (disable: 4706 4100 4101)
-#  endif
-#  include <sys/time.h>
-#  include <signal.h>
 #endif
+#ifdef HAVE_SYS_SELECT_H
+# include <sys/select.h>
+#endif
+#ifdef TIME_WITH_SYS_TIME
+# include <sys/time.h>
+# include <time.h>
+#else
+# ifdef HAVE_SYS_TIME_H
+#  include <sys/time.h>
+# else
+#  include <time.h>
+# endif
+#endif
+
 #include "typedef.h"
 #include "vt.h"
 #include "freevt3k.h"
@@ -157,22 +98,8 @@ int
 bool
 	stop_at_eof = false,
 	type_ahead = false;
-#ifdef VMS
-unsigned int
-	readMask = 0,
-	returnMask = 0,
-	efnMask = 0,
-	sockBit = 0,
-	sockEfn = 0,
-	termEfn = 0,
-	termBit = 0;
-int
-	termReadPending = 0,
-	sockReadPending = 0;
-#else
 TERMIO
 	old_termios;
-#endif
 
 #define ASC_BS			(0x08)
 #define ASC_LF			(0x0A)
@@ -363,13 +290,8 @@ void PrintUsage(int detail)
     
   printf("Usage: freevt3k [-li|-lo|-lio] [-f file] [-x] [-tt n] [-t]\n");
   printf("                [-C breakchar] ");
-#ifdef VMS
-  printf("[-breaks count] [-breaktimer timer]\n");
-  printf("                [-table file] [-a|-I file] [-d[d]] host\n");
-#else
   printf("[-B count] [-T timer]\n");
   printf("                [-X file] [-a|-I file] [-d[d]] host\n");
-#endif
   if (!detail)
     return;
   printf("   -li|-lo|-lio    - specify input|output logging options\n");
@@ -379,25 +301,14 @@ void PrintUsage(int detail)
   printf("   -tt n           - 'n'->10 (default) generates DC1 read triggers\n");
   printf("   -t              - enable type-ahead\n");
   printf("   -C breakchar    - use 'breakchar' (integer) as break trigger [BREAK or nul]\n");
-#ifdef VMS
-  printf("   -breaks count   - change number of breaks for command mode [%d]\n",
-	 DFLT_BREAK_MAX);
-  printf("   -breaktimer timer - change -breaks time interval in seconds [%d]\n",
-	 DFLT_BREAK_TIMER);
-#else
   printf("   -B count        - change number of breaks for command mode [%d]\n",
 	 DFLT_BREAK_MAX);
   printf("   -T timer        - change -B time interval in seconds [%d]\n",
 	 DFLT_BREAK_TIMER);
-#endif
   printf("   -vt100          - emulate hp2392 on vt100 terminals.\n");
   printf("   -vt52           - emulate hp2392 on vt52 terminals.\n");
   printf("   -generic        - translate hp escape sequences to tokens\n");
-#ifdef VMS
-  printf("   -table file     - specify 256-byte translation table.\n");
-#else
   printf("   -X file         - specify 256-byte translation table.\n");
-#endif
   printf("   -a file         - read initial commands from file.\n");
   printf("   -I file         - like -a, but stops when end-of-file reached\n");
   printf("   -d[d]           - enable debug output to freevt3k.debug\n");
@@ -463,7 +374,6 @@ int LoadKeybdTable(char *file_name, int i_type)
 } /*LoadKeybdTable*/
 
 #ifndef XHPTERM
-#ifndef VMS
 int SetTtyAttributes(int fd, PTERMIO termio_buf)
 { /*SetTtyAttributes*/
 
@@ -491,29 +401,22 @@ int GetTtyAttributes(int fd, PTERMIO termio_buf)
   return(0);
 
 } /*GetTtyAttributes*/
-#endif /*~VMS*/
 
 void ProcessInterrupt(void)
 {/*ProcessInterrupt*/
     
-#ifndef VMS
   TERMIO
     curr_termios,
     temp_termios;
-#endif
   char
     ans[32];
     
-#ifdef VMS
-  SetTTYNormal();
-#else
   if (stdin_tty)
     {
       GetTtyAttributes(STDIN_FILENO, &curr_termios);
       temp_termios = old_termios;
       SetTtyAttributes(STDIN_FILENO, &temp_termios);
     }
-#endif
   printf("\n");
   for (;;)
     {
@@ -535,13 +438,8 @@ void ProcessInterrupt(void)
 	  break;
 	}
     }
-#ifdef VMS
-  SetTTYRaw();
-#else
   if (stdin_tty)
     SetTtyAttributes(STDIN_FILENO, &curr_termios);
-#endif
-
 } /*ProcessInterrupt*/
 
 #ifdef USE_CTLC_INTERRUPTS
@@ -561,11 +459,7 @@ void CatchCtlC(int sig_type)
   if (signal(SIGINT, signalPtr) == SIG_ERR)
     {
       perror("signal");
-#  ifdef VMS
-      exit(STS$K_WARNING);
-#  else
       exit(1);
-#  endif
     }
 
 } /*CatchCtlC*/
@@ -956,11 +850,8 @@ int ProcessTTY(tVTConnection * conn, char *buf, ssize_t len)
     timeout;
   ssize_t
     readCount = 1;
-#ifndef VMS
   fd_set
     readfds;
-#endif
-
   if (len > 0)
     {
       if (debug > 1)
@@ -968,43 +859,6 @@ int ProcessTTY(tVTConnection * conn, char *buf, ssize_t len)
 	  fprintf(debug_fd, "read: ");
 	  debug_need_crlf = 1;
 	}
-#ifdef VMS
-#  ifndef BREAK_VIA_SIG
-      if (*buf == (conn->fSysBreakChar & 0xFF))
-	{ /* Break */
-	  send_break = true;
-/* Check for consecutive breaks - 'break_max'-in-a-row to get out */
-	  if (debug > 1)
-	    DEBUG_PRINT_CH(*buf);
-	  if (break_sigs == break_max)
-	    first_break_time = MyGettimeofday();
-	  if (ElapsedTime(first_break_time) > break_timer)
-	    {
-	      break_sigs = break_max;
-	      first_break_time = MyGettimeofday();
-	    }
-	  if (!(--break_sigs))
-	    ProcessInterrupt();
-	  if (send_break)
-	    {
-	      if (conn->fSysBreakEnabled)
-		ProcessQueueToHost(conn, -2);
-	      send_break = false;
-	    }
-	}
-      else
-#  endif
-	{
-	  if (debug > 1)
-	    DEBUG_PRINT_CH(*buf);
-	  break_sigs = break_max;
-	  if ((type_ahead) || (conn->fReadInProgress))
-	    {
-	      if (PutQ(*buf) == -1)
-		return(-1);
-	    }
-	}
-#else /* VMS */
 /*
  * Once we get the signal that at least one byte is ready, sit and read
  *   bytes from stdin until the select timer goes off after 10000 microsecs
@@ -1115,7 +969,6 @@ int ProcessTTY(tVTConnection * conn, char *buf, ssize_t len)
 
 } /*ProcessTTY*/
 
-#ifndef VMS
 int OpenTTY(PTERMIO new_termio, PTERMIO old_termio)
 { /*OpenTTY*/
 
@@ -1214,7 +1067,6 @@ void CloseTTY(int fd, PTERMIO old_termio)
     close(fd);
 
 } /*CloseTTY*/
-#endif /*~VMS*/
 
 int DoMessageLoop(tVTConnection * conn)
 { /*DoMessageLoop*/
@@ -1223,7 +1075,6 @@ int DoMessageLoop(tVTConnection * conn)
     returnValue = 0;
   ssize_t
     readCount;
-#ifndef VMS
   struct timeval
     timeout,
     *time_ptr;
@@ -1237,12 +1088,6 @@ int DoMessageLoop(tVTConnection * conn)
     nfds = 0;
   char
     termBuffer[2];
-#else
-  int32_t
-    timeout = 0;
-  char
-    termBuffer[2048];
-#endif
   /*  tBoolean    vtOpen; */
   int32_t
     start_time = 0,
@@ -1257,16 +1102,12 @@ int DoMessageLoop(tVTConnection * conn)
   extern FILE
     *debug_fd;
 
-#ifdef VMS
-  OpenTTY();
-#else
   if ((stdin_fd = OpenTTY(&new_termios, &old_termios)) == -1)
     {
       returnValue = 1;
       goto Last;
     }
   oldTermiosValid = true;    /* We can clean up now. */
-#endif
 
 /*
  * Setup a read loop waiting for I/O on either fd.  For connection I/O,
@@ -1283,85 +1124,12 @@ int DoMessageLoop(tVTConnection * conn)
   break_sigs = break_max;
 
   vtSocket = VTSocket(conn);
-#ifndef VMS
   if (stdin_tty)
     nfds = 1 + MAX(stdin_fd, vtSocket);
   else
     nfds = 1 + vtSocket;
-#endif
   while (!done)
     {
-#ifdef VMS
-      if (!sockReadPending)
-	VTReceiveDataReady(conn);
-/*
- * If a read timer has been specified, use it in the read
- */
-      if ((conn->fReadInProgress) && (conn->fReadTimeout))
-	{
-	  if (!timed_read)
-	    { /* First time timer was specified */
-	      timed_read = true;
-	      start_time = MyGettimeofday();
-	      read_timer = conn->fReadTimeout;
-	      time_remaining = read_timer;
-	    }
-	  timeout = time_remaining;
-	  if (debug)
-	    {
-	      fprintf(debug_fd, "timer: %d\n", timeout);
-	      debug_need_crlf = 0;
-	    }
-	}
-      else
-	{
-	  timed_read = false;
-	  timeout = 0;
-	}
-      StartTTYRead((unsigned char*)termBuffer,
-		   (conn->fEchoControl != 1),
-		   timeout);
-	
-      if (WaitForCompletion(&returnMask) == -1)
-	ExitProc("WaitForCompletion", "", 1);
-      if (returnMask & sockBit)
-	{
-	  if (timed_read)
-	    time_remaining = read_timer - ElapsedTime(start_time)/1000;
-	  switch (ProcessSocket(conn))
-	    {
-	    case -1:	returnValue = 1;	/* fall through */
-	    case 1:	done = true;
-	    }
-	}
-      if ((!done) && (returnMask & termBit))
-	{
-#  ifdef USE_CTLC_INTERRUPTS
-	  break_sigs = break_max;
-#  endif
-	  readCount = CompleteTTYRead((unsigned char*)termBuffer);
-	  if (readCount == -2)
-	    {
-	      if (ProcessTTY(conn, termBuffer, -1) == -1)
-		{
-		  returnValue = 1;
-		  goto Last;
-		}
-	      timed_read = false;
-	      continue;
-	    }
-	  if (timed_read)
-	    time_remaining = read_timer - ElapsedTime(start_time)/1000;
-	  if (readCount >= 0)
-	    {
-	      if (ProcessTTY(conn, termBuffer, readCount) == -1)
-		{
-		  returnValue = 1;
-		  goto Last;
-		}
-	    }
-	}
-#else
       FD_ZERO(&readfds);
       if (stdin_tty)
 	FD_SET(stdin_fd, &readfds);
@@ -1446,19 +1214,14 @@ int DoMessageLoop(tVTConnection * conn)
 		}
 	    }
 	} /* switch */
-#endif /*~VMS*/
     }  /* End read loop */
 
 Last:
 #ifdef USE_CTLC_INTERRUPTS
   RestoreCtlC();
 #endif
-#ifdef VMS
-  CloseTTY();
-#else
   if (oldTermiosValid)
     CloseTTY(stdin_fd, &old_termios);
-#endif
   return(returnValue);
 
 } /*DoMessageLoop*/
@@ -1468,37 +1231,10 @@ Last:
 void vt3kDataOutProc(int32_t refCon, char * buffer, size_t bufferLength)
 { /*vt3kDataOutProc*/
 
-#ifdef VMS
-  TT_WRITE_IOSB
-    iosb;
-  int
-    io_status = 0;
-  extern unsigned short
-    termNum;
-#endif
-
   if (log_type & LOG_OUTPUT) 
     Logit (LOG_OUTPUT, buffer, bufferLength, true);
 
-#ifdef VMS
-  io_status = sys$qiow(0,		/* event flag */
-		       termNum,		/* channel */
-		       IO$_WRITEVBLK,	/* function */
-		       &iosb,		/* i/o status block */
-		       0,		/* astadr */
-		       0,		/* astprm */
-		       buffer,		/* P1, char buffer */
-		       bufferLength,	/* P2, length */
-		       0,		/* P3, fill */
-		       0,		/* P4, fill */
-		       0,		/* P5, fill */
-		       0);		/* P6, fill */
-  if ((VMSerror(io_status)) || (VMSerror(iosb.status)))
-    ExitProc("sys$qiow", "IO$_WRITEVBLK", 1);
-#else
   write(STDOUT_FILENO, buffer, bufferLength);
-#endif
-
 } /*vt3kDataOutProc*/
 
 #ifndef XHPTERM
@@ -1531,16 +1267,9 @@ int main(int argc, char *argv[])
   if (argc < 2)
     {
       PrintUsage(1);
-#ifdef VMS
-      exit(STS$K_WARNING);
-#else
       return(2);
-#endif
     }
 
-#ifdef VMS
-  eight_none = true;
-#endif
   ++argv;
   --argc;
   while ((argc > 0) && (*argv[0] == '-'))
@@ -1842,11 +1571,6 @@ int main(int argc, char *argv[])
 
   VTCleanUpConnection(conn);
 
-#ifdef VMS
-  exit((returnValue) ? STS$K_WARNING : STS$K_SUCCESS);
-#else
   return(returnValue);
-#endif
-
 } /*main*/
 #endif /*~XHPTERM*/

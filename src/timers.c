@@ -16,16 +16,6 @@ int32_t MyGettimeofday(void)
     long
 	sec,
 	ms;
-#ifdef VMS
-#  include <timeb.h>
-
-    struct timeb
-	time_pointer;
-    
-    ftime(&time_pointer);
-    sec = time_pointer.time;
-    ms = time_pointer.millitm;
-#else
     struct timeval
 	tp;
 #  ifdef SHORT_GETTIMEOFDAY
@@ -38,7 +28,6 @@ int32_t MyGettimeofday(void)
 #  endif
     sec = tp.tv_sec;
     ms = tp.tv_usec/1000;
-#endif
     if (!baseSet)
 	{
 	baseSet = 1;

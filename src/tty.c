@@ -1,58 +1,19 @@
 /***************************************************************/
-#ifdef VMS
-#  include <types.h>
-#  include <stdio.h>
-#  include <unixio.h>
-#  include <string.h>
-#  include <stdlib.h>
-#  include <time.h>
-#  include <timeb.h>
-#  include <stdarg.h>
-#  include <ctype.h>
-#  include <errno.h>
-#  include <limits.h>
-#  include <file.h>
-#  include <signal.h>
-#  include <assert.h>
-#  include <iodef.h>
-#  include <stsdef.h>
-#  include <socket.h>
-#  include <in.h>
-#  include <netdb.h>
-#  include <inet.h>
-#  include <lib$routines.h>
-#  include <starlet.h>
-#  include <ucx$inetdef.h>
+#include "config.h"
+/***************************************************************/
+#include <errno.h>
+#include <fcntl.h>
+#include <sys/types.h>
+#include <unistd.h>
+/***************************************************************/
+#include <stdio.h>
+#include <stddef.h>
+#include <stdlib.h>
+#include <string.h>
+#ifdef HAVE_TERMIOS_H
+# include <termios.h>
 #else
-#  include "config.h"
-#  ifdef HPUX
-#    ifndef _HPUX_SOURCE
-#      define _HPUX_SOURCE (1)
-#    endif
-#    ifndef _POSIX_SOURCE
-#      define _POSIX_SOURCE (1)
-#    endif
-#  endif
-#  if defined(MACOSX) || defined(FREEBSD)
-#    ifndef _POSIX_SOURCE
-#      define _POSIX_SOURCE (1)
-#    endif
-#  endif
-/***************************************************************/
-#  include <errno.h>
-#  include <fcntl.h>
-#  include <sys/types.h>
-#  include <unistd.h>
-/***************************************************************/
-#  include <stdio.h>
-#  include <stddef.h>
-#  include <stdlib.h>
-#  include <string.h>
-#  ifdef HAVE_TERMIOS_H
-#    include <termios.h>
-#  else
-#    include <termio.h>
-#  endif
+# include <termio.h>
 #endif
 /***************************************************************/
 #include "conmgr.h"

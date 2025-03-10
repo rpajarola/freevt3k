@@ -11,9 +11,7 @@
 #include <X11/Xatom.h>
 #include <X11/keysym.h>
 
-#ifndef VMS
 #include <stdio.h>
-#endif
 
 #define LOG_INPUT               (0x01)
 #define LOG_OUTPUT              (0x02)

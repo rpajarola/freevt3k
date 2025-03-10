@@ -47,43 +47,14 @@ static int SendToAM(tVTConnection * conn,
                       tVTMHeader * theMessage, uint16_t messageLength)
 { /*SendToAM*/
     int   returnValue = kVTCNoError;
-#ifdef VMS
-    TT_WRITE_IOSB
-	iosb;
-    short int
-	chan;
-    int
-	io_status;
-#else
     ssize_t
 	charsSent;
-#endif
 
     theMessage->fMessageLength = htons(messageLength);
     if (debug > 0)
 	DumpBuffer(&theMessage->fProtocolID,
 		   messageLength-sizeof(theMessage->fMessageLength),
 		   "to_host");
-#ifdef VMS
-    chan = vaxc$get_sdc(conn->fSocket);
-    io_status = sys$qiow(0,		/* event flag */
-			 chan,		/* channel */
-			 IO$_WRITEVBLK,	/* function */
-			 &iosb,		/* iosb */
-			 0,		/* astadr */
-			 0,		/* astprm */
-			 (char*)theMessage,/* P1, char buffer */
-			 messageLength,	/* P2, length */
-			 0,		/* P3 */
-			 0,		/* P4 */
-			 0,		/* P5 */
-			 0);		/* P6 */
-    if (VMSerror(io_status) || VMSerror(iosb.status))
-	{
-	returnValue = kVTCSocketError;
-	conn->fLastSocketError = errno;
-	}
-#else
     charsSent = send(conn->fSocket, (void*)theMessage, messageLength, 0);
     if (charsSent == -1)
         {
@@ -94,8 +65,6 @@ static int SendToAM(tVTConnection * conn,
         {
         returnValue = kVTCSendError;
         }
-#endif
-    
     return returnValue;
 } /*SendToAM*/
 
@@ -127,34 +96,6 @@ static int ProcessAMNegotiationRequest(tVTConnection * conn)
     uint16_t	nodeNameLength;
     tVTMAMBreakInfo		*breakInfo;
     char	pid_buf[sizeof(tmreq.fSessionID)+1];
-#ifdef VMS
-#  include <jpidef.h>
-    TT_READ_IOSB
-	iosb;
-    int
-	status = 0,
-	pid = 0,
-	job_type = 0;
-    short int
-	job_type_len;
-    struct
-	{
-	short int	buf_len;
-	short int	item_code;
-	unsigned char	*buf;
-	short int	*ret_len;
-	int		terminator;
-	} jpi_info;
-    long
-	ip_addr;
-    char
-	*ptr;
-    int
-	len = 0;
-    struct hostent
-	*hostentptr;
-#endif
-
     /* First, convert all multi-byte values to host order. */
 
 #define TOHOST(f) amreq->f = ntohs(amreq->f)
@@ -240,44 +181,13 @@ static int ProcessAMNegotiationRequest(tVTConnection * conn)
 	tmreq.fLinkType = kVTDefaultCommLinkType;
 	tmreq.fTerminalClass = htons(kVTDefaultTerminalClass);
 
-#ifdef VMS
-	jpi_info.item_code	= JPI$_JOBTYPE;
-	jpi_info.buf_len	= sizeof(job_type);
-	jpi_info.buf	= (unsigned char*)&job_type;
-	jpi_info.ret_len	= &job_type_len;
-	jpi_info.terminator	= 0;
-	status = sys$getjpiw(0,         /* efn */
-			     &pid,	/* pidadr */
-			     0,		/* prcnam */
-			     &jpi_info,	/* itmlst */
-			     &iosb,	/* iosb */
-			     0,		/* astadr */
-			     0);	/* astprm */
-	if ((VMSerror(status)) || (VMSerror(iosb.status)))
-	    ExitProc("sys$getjpiw", "", 1);
-	sprintf(pid_buf, "%0*d", (int) sizeof(tmreq.fSessionID), pid);
-#else
 	sprintf(pid_buf, "%0*d", (int) sizeof(tmreq.fSessionID), getpid());
-#endif
 	memcpy(tmreq.fSessionID, pid_buf, sizeof(tmreq.fSessionID));
 
-#ifdef VMS
-#  ifdef know_how_to_do_this
-/*
- * Have to dig into System Services to find mechanism to do a
- *   getdomainname() call
- */
-#  else
 	gethostname(hostName, sizeof(hostName));
-#  endif
-#else
-	gethostname(hostName, sizeof(hostName));
-#  ifndef WINNT
 	getdomainname(domainName, sizeof(domainName));
 	strcat(hostName, ".");
 	strcat(hostName, domainName);
-#  endif
-#endif
 
 	nodeNameLength = strlen(hostName);
 	if (nodeNameLength > sizeof(tmreq.fNodeName))
@@ -1102,16 +1012,8 @@ int VTConnect(tVTConnection * conn)
 { /*VTConnect*/
     int  connectError;
     int  returnValue = kVTCNoError;	/* Assume success */
-#ifdef VMS
-    unsigned int  efnMask = 0;
-    extern unsigned int
-	readMask,
-	sockBit,
-	sockEfn;
-#else
     int
 	flags = 0;
-#endif
 #ifdef IPPROTO_IP
 #ifdef IP_TOS
     int tos = 0;
@@ -1176,14 +1078,6 @@ int VTConnect(tVTConnection * conn)
 	goto Last;
 	}
 
-#ifdef VMS
-/*
- * Allocate an event flag for the socket and set bit in event flag mask
- */
-    if (GetEventFlag(&sockEfn, &sockBit, &efnMask) == -1)
-	ExitProc("GetEventFlag", "", 1);
-    readMask |= sockBit;
-#else
 #  ifdef O_NONBLOCK
     if ((flags = fcntl(conn->fSocket, F_GETFL, 0)) == -1)
 	{
@@ -1199,7 +1093,6 @@ int VTConnect(tVTConnection * conn)
 	goto Last;
 	}
 #  endif
-#endif
 
     SetUpForNewRecordReceive(conn);
     conn->fState = kvtsWaitingForAM;
@@ -1215,10 +1108,6 @@ int VTReceiveDataReady(tVTConnection * conn)
     size_t lengthToReceive;
     ssize_t
 	   receivedLength;
-#ifdef VMS
-    extern int
-	sockReadPending;
-#endif
 
     if (conn->fReceiveBufferOffset < 0)  /* Receiving length word? */
         {
@@ -1234,18 +1123,7 @@ int VTReceiveDataReady(tVTConnection * conn)
         lengthToReceive = conn->fLengthToReceive;
         }
 
-#ifdef VMS
-    if (!sockReadPending)
-	{
-	StartReadSocket(conn->fSocket,
-			(unsigned char*)dataDest,
-			lengthToReceive);
-	return(0);
-	}
-    receivedLength = CompleteReadSocket();
-#else
     receivedLength = read(conn->fSocket, dataDest, lengthToReceive);
-#endif
     if (receivedLength > 0)
         {
         if (conn->fReceiveBufferOffset < 0) /* Data intended for len?*/

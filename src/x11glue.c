@@ -14,44 +14,10 @@ static char const rcsid[] = "$Id: x11glue.c,v 1.1 2003/03/14 16:28:44 randy Exp 
  * Copyright 1989 O'Reilly and Associates, Inc.
  * See ../Copyright for complete rights and liability information.
  */
-#ifdef VMS
-#include <types.h>
-#include <stdio.h>
-#include <unixio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <time.h>
-#include <timeb.h>
-#include <stdarg.h>
-#include <ctype.h>
-#include <errno.h>
-#include <limits.h>
-#include <file.h>
-#include <signal.h>
-#include <assert.h>
-#include <iodef.h>
-#include <stsdef.h>
-#include <socket.h>
-#include <in.h>
-#include <netdb.h>
-#include <inet.h>
-#include <lib$routines.h>
-#include <starlet.h>
-#include <ucx$inetdef.h>
-#else
 #include "config.h"
 #include <stdlib.h>
 #include <stdbool.h>
 #include <ctype.h>
-#ifdef __hpux
-#ifndef _HPUX_SOURCE
-#define _HPUX_SOURCE 1
-#endif
-#ifndef _POSIX_SOURCE
-#define _POSIX_SOURCE
-#endif
-#endif
-#endif
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -59,7 +25,6 @@ static char const rcsid[] = "$Id: x11glue.c,v 1.1 2003/03/14 16:28:44 randy Exp 
 #include <X11/Xatom.h>
 #include <X11/keysym.h>
 
-#ifndef VMS
 #include <stdio.h>
 #ifdef TIME_WITH_SYS_TIME
 #include <sys/time.h>
@@ -69,7 +34,6 @@ static char const rcsid[] = "$Id: x11glue.c,v 1.1 2003/03/14 16:28:44 randy Exp 
 #include <sys/time.h>
 #else
 #include <time.h>
-#endif
 #endif
 #ifdef HAVE_SYS_SELECT_H
 #include <sys/select.h>
