@@ -2,6 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_INIT([freevt3k],[1.0],[rp@servium.ch])
+AC_CONFIG_AUX_DIR([scripts])
 AM_INIT_AUTOMAKE([-Wall -Werror gnu subdir-objects])
 AC_PROG_CC
 
