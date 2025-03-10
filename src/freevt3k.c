@@ -961,7 +961,6 @@ int ProcessTTY(tVTConnection * conn, char *buf, ssize_t len)
 	    }
 	  readCount = 0;
 	} /* for (;;) */
-#endif
     } /* if (len > 0) */
   if (conn->fReadInProgress)
     ProcessQueueToHost(conn, len);
