@@ -6,7 +6,7 @@ AM_INIT_AUTOMAKE([-Wall -Werror gnu subdir-objects])
 AC_PROG_CC
 
 AC_USE_SYSTEM_EXTENSIONS
-AC_CHECK_HEADERS([ctype.h sys/socket.h netinet/in.h sys/time.h])
+AC_CHECK_HEADERS([ctype.h sys/socket.h netinet/in.h sys/time.h termios.h])
 
 AC_PATH_XTRA
 
