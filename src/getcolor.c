@@ -40,7 +40,9 @@ int get_colors(nb_colors, color_names, color_codes)
         Visual *default_visual;
 	XColor exact_def;
 	Colormap default_cmap;
+#if DEBUG_GET_COLORS
 	int ncolors = 0;
+#endif
 	int i = 5;
 	XVisualInfo visual_info;
 	
@@ -119,7 +121,9 @@ int get_colors(nb_colors, color_names, color_codes)
 		printf("The RGB values actually allocated are %d, %d, %d\n", exact_def.red, exact_def.green, exact_def.blue);
 #endif
 		color_codes[i] = exact_def.pixel;
+#if DEBUG_GET_COLORS
 		ncolors++;
+#endif
 	}
 #if DEBUG_GET_COLORS
 	printf("%s: allocated %d read-only color cells\n", progname, ncolors);

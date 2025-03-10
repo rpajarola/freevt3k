@@ -125,7 +125,7 @@ int open_tty_connection (char * deviceinfo)
     case 3840: speed = B38400; break;
     default:   speed = B19200;
     }
-#ifdef _POSIX_SOURCE
+#ifdef HAVE_TERMIOS_H
   if (cfsetispeed((PTERMIO)&curr_termio, speed) == -1)
     {
       printf ("Error %d from cfsetispeed(%s)\n", errno, deviceinfo);
