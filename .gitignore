@@ -1,4 +1,6 @@
 *.o
+*.swp
+*~
 
 src/freevt3k
 src/xhpterm
@@ -11,4 +13,3 @@ config.h
 config.log
 config.status
 autom4te.cache
-configure~
