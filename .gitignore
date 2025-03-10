@@ -1,0 +1,12 @@
+*.o
+
+src/freevt3k
+src/xhpterm
+
+Makefile
+.deps
+
+stamp-h1
+config.h
+config.log
+config.status
