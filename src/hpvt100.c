@@ -1,3 +1,17 @@
+#include <stdarg.h>
+#include <stddef.h>
+#include <stdint.h>
+#include <ctype.h>
+#include <string.h>
+#include <stdio.h>
+
+#include <sys/socket.h>
+#include <netinet/in.h>
+
+#include "freevt3k.h"
+#include "vtconn.h"
+#include "dumpbuf.h"
+
 /* Circular VT queue parms */
 #define MAX_VT_QUEUE		(kVT_MAX_BUFFER)
 
@@ -12,7 +26,6 @@ int
     vt_queue_len_hold = 0,
     vt_queue_len = 0;
 
-#include <stdarg.h>
 int int_sprintf(char *buf, const char *fmt, ...)
 { /*int_sprintf*/
 

@@ -117,11 +117,8 @@ typedef struct termio TERMIO, *PTERMIO;
 #include "freevt3k.h"
 #include "hpvt100.h"
 #include "vtconn.h"
-#ifdef VMS
-#  include "vmsutil.h"
-#  include "error.h"
-#endif
 #include "dumpbuf.h"
+#include "timers.h"
 
 /* Useful macros */
 
@@ -247,7 +244,6 @@ bool
 int32_t
 	first_break_time = 0;
 
-#include "timers.c"
 
 #ifdef DEBUG_TRANSLATE_TABLE
 void DisplayHex(void *buf, int buf_len, char *dump_id)
@@ -1466,6 +1462,8 @@ Last:
   return(returnValue);
 
 } /*DoMessageLoop*/
+#endif /*~XHPTERM*/
+
 
 void vt3kDataOutProc(int32_t refCon, char * buffer, size_t bufferLength)
 { /*vt3kDataOutProc*/
@@ -1502,8 +1500,9 @@ void vt3kDataOutProc(int32_t refCon, char * buffer, size_t bufferLength)
 #endif
 
 } /*vt3kDataOutProc*/
+
+#ifndef XHPTERM
 
-#  include "hpvt100.c"
 
 int main(int argc, char *argv[])
 { /*main*/

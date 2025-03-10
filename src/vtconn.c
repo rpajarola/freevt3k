@@ -13,96 +13,37 @@
                Jeff Moffatt <jeff@TAURUS.COM>, 2 APR 96
 */
 
-#ifdef VMS
-#  include <types.h>
-#  include <stdio.h>
-#  include <unixio.h>
-#  include <string.h>
-#  include <stdlib.h>
-#  include <time.h>
-#  include <timeb.h>
-#  include <ctype.h>
-#  include <errno.h>
-#  include <limits.h>
-#  include <file.h>
-#  include <signal.h>
-#  include <assert.h>
-#  include <stat.h>
-#  include <dcdef.h>
-#  include <ssdef.h>
-#  include <iodef.h>
-#  include <msgdef.h>
-#  include <ttdef.h>
-#  include <tt2def.h>
-#  include <stsdef.h>
-#  include <descrip.h>
-#  include <setjmp.h>
-#  include <psldef.h>
-#  include <prvdef.h>
-#  include <syidef.h>
-#  include <rms.h>
-#  include <socket.h>
-#  include <in.h>
-#  include <netdb.h>
-#  include <inet.h>
-#  include <lib$routines.h>
-#  include <starlet.h>
-#  include <ucx$inetdef.h>
-#  include "vmsutil.h"
-#else
-#  include "config.h"
-#  ifdef HPUX
-#    ifndef _HPUX_SOURCE
-#      define _HPUX_SOURCE		(1)
-#    endif
-#    ifndef _POSIX_SOURCE
-#      define _POSIX_SOURCE		(1)
-#    endif
-#  endif
-#  include <stdio.h>
-#  include <stdlib.h>
-#  include <stdarg.h>
-#  include <string.h>
-#  include <ctype.h>
-#  include <sys/types.h>
-#  include <sys/socket.h>
-#  include <netinet/in.h>
-#  include <netinet/tcp.h>
-#  include <netdb.h>
-#  include <assert.h>
-#  include <unistd.h>
-#  include <fcntl.h>
-#  include <errno.h>
-/*
-#  define PortableStrerror		strerror
-#  define PortableErrno(x)		(x)
- */
-#  if defined(WINNT)
-#pragma warning (disable: 4706 4100 4101)
-#  endif
-#endif
-#include "typedef.h"
-#include "error.h"
-#include "vt.h"
-#include "freevt3k.h"
-#include "vtconn.h"
+#include "config.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdarg.h>
+#include <string.h>
+#include <ctype.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netinet/tcp.h>
+#include <netdb.h>
+#include <assert.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <errno.h>
 
-#define PRIVATE static
+#include "dumpbuf.h"
+#include "vt3kglue.h"
 
 extern int
 	debug;
 int
 	appl_req_count = 0;
 
-#include "dumpbuf.c"
-
 
-PRIVATE void DefaultDataOutProc(int32_t refCon, char * buffer, size_t bufferLength)
+static void DefaultDataOutProc(int32_t refCon, char * buffer, size_t bufferLength)
 { /*DefaultDataOutProc*/
     write(STDOUT_FILENO, buffer, bufferLength);
 } /*DefaultDataOutProc*/
 
-PRIVATE int SendToAM(tVTConnection * conn, 
+static int SendToAM(tVTConnection * conn, 
                       tVTMHeader * theMessage, uint16_t messageLength)
 { /*SendToAM*/
     int   returnValue = kVTCNoError;
@@ -140,14 +81,14 @@ PRIVATE int SendToAM(tVTConnection * conn,
     if (VMSerror(io_status) || VMSerror(iosb.status))
 	{
 	returnValue = kVTCSocketError;
-	conn->fLastSocketError = PortableErrno(errno);
+	conn->fLastSocketError = errno;
 	}
 #else
     charsSent = send(conn->fSocket, (void*)theMessage, messageLength, 0);
     if (charsSent == -1)
         {
         returnValue = kVTCSocketError;
-        conn->fLastSocketError = PortableErrno(errno);
+        conn->fLastSocketError = errno;
         }
     else if (charsSent != messageLength)
         {
@@ -158,7 +99,7 @@ PRIVATE int SendToAM(tVTConnection * conn,
     return returnValue;
 } /*SendToAM*/
 
-PRIVATE void FillStandardMessageHeader(tVTMHeader * theHeader, 
+static void FillStandardMessageHeader(tVTMHeader * theHeader, 
 				       tVTMessageType messageType,
 				       uint8_t primitive)	/* RM 960410 */
 { /*FillStandardMessageHeader*/
@@ -168,13 +109,13 @@ PRIVATE void FillStandardMessageHeader(tVTMHeader * theHeader,
     theHeader->fUnused = 0;
 }
 
-PRIVATE void SetUpForNewRecordReceive(tVTConnection * conn)
+static void SetUpForNewRecordReceive(tVTConnection * conn)
 { /*SetUpForNewRecordReceive*/
     conn->fLengthToReceive = 2;
     conn->fReceiveBufferOffset = -2;
 } /*SetUpForNewRecordReceive*/
 
-PRIVATE int ProcessAMNegotiationRequest(tVTConnection * conn)
+static int ProcessAMNegotiationRequest(tVTConnection * conn)
 { /*ProcessAMNegotiationRequest*/
     int returnValue = kVTCNoError;
     tVTMAMNegotiationRequest * amreq = (tVTMAMNegotiationRequest *)
@@ -357,7 +298,7 @@ Last:
 #undef TOHOST
 } /*ProcessAMNegotiationRequest*/
 
-PRIVATE int ProcessTMNegotiationResponse(tVTConnection * conn)
+static int ProcessTMNegotiationResponse(tVTConnection * conn)
 { /*ProcessTMNegotiationResponse*/
    tVTMTMNegotiationReply * tmResp = 
                   (tVTMTMNegotiationReply *) conn->fReceiveBuffer;
@@ -373,7 +314,7 @@ PRIVATE int ProcessTMNegotiationResponse(tVTConnection * conn)
    return returnValue;
 } /*ProcessTMNegotiationResponse*/
 
-PRIVATE int ProcessTerminationResponse(tVTConnection * conn)
+static int ProcessTerminationResponse(tVTConnection * conn)
 { /*ProcessTerminationResponse*/
     int returnValue = kVTCNoError;
     tVTMTerminationResponse * termresp = (tVTMTerminationResponse *) 
@@ -386,7 +327,7 @@ PRIVATE int ProcessTerminationResponse(tVTConnection * conn)
     return returnValue;
 } /*ProcessTerminationResponse*/
 
-PRIVATE void ProcessCCTL(tVTConnection * conn, unsigned char cctlChar)
+static void ProcessCCTL(tVTConnection * conn, unsigned char cctlChar)
 { /*ProcessCCTL*/
     char  lfBuffer[80];
     char  *ptr;
@@ -424,7 +365,7 @@ PRIVATE void ProcessCCTL(tVTConnection * conn, unsigned char cctlChar)
     conn->fDataOutProc(conn->fDataOutRefCon, lfBuffer, len);
 } /*ProcessCCTL*/
 
-PRIVATE int ProcessWriteRequest(tVTConnection * conn)
+static int ProcessWriteRequest(tVTConnection * conn)
 { /*ProcessWriteRequest*/
     int returnValue = kVTCNoError;
     tVTMIORequest * writereq = (tVTMIORequest *) conn->fReceiveBuffer;
@@ -504,7 +445,7 @@ PRIVATE int ProcessWriteRequest(tVTConnection * conn)
     return returnValue;
 } /*ProcessWriteRequest*/
 
-PRIVATE int ProcessReadRequest(tVTConnection * conn)
+static int ProcessReadRequest(tVTConnection * conn)
 { /*ProcessReadRequest*/
     int returnValue = kVTCNoError;
     tVTMIORequest * readreq = (tVTMIORequest *) conn->fReceiveBuffer;
@@ -526,7 +467,7 @@ PRIVATE int ProcessReadRequest(tVTConnection * conn)
     return returnValue;
 } /*ProcessReadRequest*/
 
-PRIVATE int ProcessAbortRequest(tVTConnection * conn)
+static int ProcessAbortRequest(tVTConnection * conn)
 { /*ProcessAbortRequest*/
     int returnValue = kVTCNoError;
     tVTMIORequest * abortreq = (tVTMIORequest *) conn->fReceiveBuffer;
@@ -559,7 +500,7 @@ PRIVATE int ProcessAbortRequest(tVTConnection * conn)
     return returnValue;
 } /*ProcessAbortRequest*/
 
-PRIVATE int ProcessTerminalIOReq(tVTConnection * conn)
+static int ProcessTerminalIOReq(tVTConnection * conn)
 { /*ProcessTerminalIOReq*/
     int returnValue = kVTCNoError;
     tVTMHeader * messageHeader = (tVTMHeader *) conn->fReceiveBuffer;
@@ -589,7 +530,7 @@ PRIVATE int ProcessTerminalIOReq(tVTConnection * conn)
     return returnValue;
 } /*ProcessTerminalIOReq*/
 
-PRIVATE int ProcessEnvCntlResp(tVTConnection * conn)
+static int ProcessEnvCntlResp(tVTConnection * conn)
 { /*ProcessEnvCntlResp*/
     int returnValue = kVTCNoError;
     tVTMHeader * messageHeader = (tVTMHeader *) conn->fReceiveBuffer;
@@ -617,7 +558,7 @@ PRIVATE int ProcessEnvCntlResp(tVTConnection * conn)
     return returnValue;
 } /*ProcessEnvCntlResp*/
 
-PRIVATE int ProcessTerminationRequest(tVTConnection * conn)
+static int ProcessTerminationRequest(tVTConnection * conn)
 { /*ProcessTerminationRequest*/
     int returnValue = kVTCNoError;
     tVTMTerminationRequest * termreq = (tVTMTerminationRequest *) 
@@ -636,7 +577,7 @@ PRIVATE int ProcessTerminationRequest(tVTConnection * conn)
     return returnValue;
 } /*ProcessTerminationRequest*/
 
-PRIVATE int ProcessLogonInfo(tVTConnection * conn)
+static int ProcessLogonInfo(tVTConnection * conn)
 { /*ProcessLogonInfo*/
     int returnValue = kVTCNoError;
     tVTMLogonInfo * termreq = (tVTMLogonInfo *) conn->fReceiveBuffer;
@@ -654,7 +595,7 @@ PRIVATE int ProcessLogonInfo(tVTConnection * conn)
     return returnValue;
 } /*ProcessLogonInfo*/
 
-PRIVATE int ProcessEnvCntlReq(tVTConnection * conn)
+static int ProcessEnvCntlReq(tVTConnection * conn)
 { /*ProcessEnvCntlReq*/
     int returnValue = kVTCNoError;
     tVTMHeader * messageHeader = (tVTMHeader *) conn->fReceiveBuffer;
@@ -682,7 +623,7 @@ PRIVATE int ProcessEnvCntlReq(tVTConnection * conn)
     return returnValue;
 } /*ProcessEnvCntlReq*/
 
-PRIVATE int ProcessSetBreakRequest(tVTConnection * conn)
+static int ProcessSetBreakRequest(tVTConnection * conn)
 { /*ProcessSetBreakRequest*/
     int returnValue = kVTCNoError;
     tVTMSetBreakRequest * breakreq = 
@@ -703,7 +644,7 @@ PRIVATE int ProcessSetBreakRequest(tVTConnection * conn)
     return returnValue;
 } /*ProcessSetBreakRequest*/
 
-PRIVATE int ProcessDriverControlRequest(tVTConnection * conn)
+static int ProcessDriverControlRequest(tVTConnection * conn)
 { /*ProcessDriverControlRequest*/
     int returnValue = kVTCNoError;
     tVTMTerminalDriverControlRequest * req = 
@@ -802,7 +743,7 @@ PRIVATE int ProcessDriverControlRequest(tVTConnection * conn)
     return returnValue;
 } /*ProcessDriverControlRequest*/
 
-PRIVATE int ProcessTerminalCntlReq(tVTConnection * conn)
+static int ProcessTerminalCntlReq(tVTConnection * conn)
 { /*ProcessTerminalCntlReq*/
     int returnValue = kVTCNoError;
     tVTMHeader * messageHeader = (tVTMHeader *) conn->fReceiveBuffer;
@@ -828,7 +769,7 @@ PRIVATE int ProcessTerminalCntlReq(tVTConnection * conn)
     return returnValue;
 } /*ProcessTerminalCntlReq*/
 
-PRIVATE int ProcessMPEControlReq(tVTConnection * conn)
+static int ProcessMPEControlReq(tVTConnection * conn)
 { /*ProcessMPEControlReq*/
     int returnValue = kVTCNoError;
     tVTMMPECntlReq * req = (tVTMMPECntlReq *) conn->fReceiveBuffer;
@@ -849,7 +790,7 @@ PRIVATE int ProcessMPEControlReq(tVTConnection * conn)
     return returnValue;
 } /*ProcessMPEControlReq*/
 
-PRIVATE int ProcessFDCControlReq(tVTConnection * conn)
+static int ProcessFDCControlReq(tVTConnection * conn)
 { /*ProcessFDCControlReq*/
     int returnValue = kVTCNoError;
     tVTMFDCCntlReq * req = (tVTMFDCCntlReq *) conn->fReceiveBuffer;
@@ -877,7 +818,7 @@ PRIVATE int ProcessFDCControlReq(tVTConnection * conn)
     return returnValue;
 } /*ProcessFDCControlReq*/
 
-PRIVATE int GenerateApplControlReq(tVTConnection * conn, int send_index)
+static int GenerateApplControlReq(tVTConnection * conn, int send_index)
 { /*GenerateApplControlReq*/
     int returnValue = kVTCNoError;
     tVTMApplCntlResp ApplResp;
@@ -893,7 +834,7 @@ PRIVATE int GenerateApplControlReq(tVTConnection * conn, int send_index)
     return returnValue;
 } /*GenerateApplControlReq*/
 
-PRIVATE int ProcessReceivedRecord(tVTConnection * conn)
+static int ProcessReceivedRecord(tVTConnection * conn)
 { /*ProcessReceivedRecord*/
     int returnValue = kVTCNoError;
     tVTMHeader * messageHeader = (tVTMHeader *) conn->fReceiveBuffer;
@@ -1001,7 +942,7 @@ void VTErrorMessage(tVTConnection * conn, int errorCode, char * msg, int maxLeng
     case kVTCSocketError:
 	if (conn)
 	    sprintf(messageBuffer, "Socket error: %s.", 
-		    PortableStrerror(conn->fLastSocketError));
+		    strerror(conn->fLastSocketError));
 	else strcpy(messageBuffer, "Socket error.");
 	break;
 
@@ -1038,7 +979,7 @@ void VTErrorMessage(tVTConnection * conn, int errorCode, char * msg, int maxLeng
     case kVTCSendError:
 	if (conn)
 	    sprintf(messageBuffer, "Socket error on send: %s.", 
-		    PortableStrerror(conn->fLastSocketError));
+		    strerror(conn->fLastSocketError));
 	else strcpy(messageBuffer, "Socket error on send.");
 	break;
 
@@ -1198,7 +1139,7 @@ int VTConnect(tVTConnection * conn)
     if (0 > setsockopt(conn->fSocket, IPPROTO_IP, IP_TOS, &tos, sizeof(tos)))
 	{
 	returnValue = kVTCSocketError;
-	conn->fLastSocketError = PortableErrno(errno);
+	conn->fLastSocketError = errno;
 	goto Last;
 	}
 #endif /* IP_TOS */
@@ -1218,7 +1159,7 @@ int VTConnect(tVTConnection * conn)
     if (0 > setsockopt(conn->fSocket, IPPROTO_TCP, TCP_NOOPT, &noopt, sizeof(noopt)))
         {
 	returnValue = kVTCSocketError;
-	conn->fLastSocketError = PortableErrno(errno);
+	conn->fLastSocketError = errno;
 	goto Last;
 	}
 #endif /* TCP_NOOPT */
@@ -1231,7 +1172,7 @@ int VTConnect(tVTConnection * conn)
     if (connectError)
 	{
 	returnValue = kVTCSocketError;
-	conn->fLastSocketError = PortableErrno(errno);
+	conn->fLastSocketError = errno;
 	goto Last;
 	}
 
@@ -1247,14 +1188,14 @@ int VTConnect(tVTConnection * conn)
     if ((flags = fcntl(conn->fSocket, F_GETFL, 0)) == -1)
 	{
 	returnValue = kVTCSocketError;
-	conn->fLastSocketError = PortableErrno(errno);
+	conn->fLastSocketError = errno;
 	goto Last;
 	}
     flags |= O_NONBLOCK;
     if (fcntl(conn->fSocket, F_SETFL, flags) == -1)
 	{
 	returnValue = kVTCSocketError;
-	conn->fLastSocketError = PortableErrno(errno);
+	conn->fLastSocketError = errno;
 	goto Last;
 	}
 #  endif
@@ -1352,7 +1293,7 @@ int VTReceiveDataReady(tVTConnection * conn)
     else if (receivedLength < 0)  /* Error occurred? */
         {
 	returnValue = kVTCSocketError;
-	conn->fLastSocketError = PortableErrno(errno);
+	conn->fLastSocketError = errno;
         }
 
 Last:

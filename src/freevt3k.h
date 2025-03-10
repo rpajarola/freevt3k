@@ -23,5 +23,7 @@
 #define LOG_OUTPUT		(0x02)
 #define LOG_PREFIX              (0x04)
 
+extern int debug;
+
 #endif
 
