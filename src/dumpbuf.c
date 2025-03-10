@@ -2,6 +2,13 @@
  * @(#) dumpbuf.c: 93/11/12-15:35:00
  */
 
+#include <stdio.h>
+#include <stddef.h>
+#include <string.h>
+#include <ctype.h>
+
+#include "dumpbuf.h"
+
 FILE
 	*debug_fd = NULL;
 
