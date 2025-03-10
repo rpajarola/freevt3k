@@ -4,6 +4,7 @@
 #include <ctype.h>
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -702,7 +703,10 @@ void vt3kHPtoVT100(int32_t refCon, char *buf, size_t buf_len)
 	  col = (move_relative) ? num_val : ++num_val;
 	}
       else
-	row = (move_relative) ? num_val : ++num_val;
+	{
+	  row_position = 1;
+	  row = (move_relative) ? num_val : ++num_val;
+	}
       if (isupper((int)vt_ch))
 	{ /* End of sequence: just row or column position */
 	  if (row_position)
@@ -1046,7 +1050,10 @@ void vt3kHPtoGeneric(int32_t refCon, char *buf, size_t buf_len)
 	  col = num_val;
 	}
       else
-	row = num_val;
+	{
+	  row_position = 1;
+	  row = num_val;
+	}
       if (isupper((int)vt_ch))
 	{ /* End of sequence: just row or column position */
 	  if (row_position)
@@ -1306,10 +1313,14 @@ void vt3kHPtoVT52(int32_t refCon, char *buf, size_t buf_len)
 	  col = (move_relative) ? num_val : ++num_val;
 	}
       else
-	row = (move_relative) ? num_val : ++num_val;
+	{
+	  row_position = 1;
+	  row = (move_relative) ? num_val : ++num_val;
+	}
       if (isupper((int)vt_ch))
 	{ /* End of sequence: just row or column position */
 /* No can do in VT52 mode */
+      if (row_position == 1) {}
 	  continue;
 	}
 /* Get numeric row/column value */

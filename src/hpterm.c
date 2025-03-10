@@ -5,8 +5,6 @@
  *
  */
 
-static char const rcsid[] = "$Id: hpterm.c,v 1.1 2003/03/14 16:28:44 randy Exp $";
-
 /* Copyright (C) 1996 Jeff Moffatt
 
    xhpterm: hpterm emulator with imbedded freevt3k
@@ -198,7 +196,7 @@ void update_row (int r, struct row *rp)
  */
 {
   int i;
-  int n, c;
+  int n;
   int style;
 #if 0
 /*
@@ -632,7 +630,7 @@ static void update_labels (void)
    **  Bring term->menu1 and term->menu2 up to date
  */
   struct udf *u;
-  int i, j, k, n, s;
+  int i, j, k, n;
   char ch;
 /*
    **  Set the default display enhancements for the function labels
@@ -707,7 +705,6 @@ static void update_labels (void)
 	  u = term->UserDefKeys[i];
 	  j = i * 9;
 	  k = 0;
-	  s = 0;
 	  if (i > 3)
 	    j += 9;
 	  for (n = 0; n < u->LabelLength; n++)
@@ -770,9 +767,6 @@ void do_line_feed (void)
 {
 
   struct row *rp;
-#if defined(MEMLOCK_2000)
-  struct row *saverp;
-#endif
 
   term->cr++;
   if (term->cr >= term->nbrows)
@@ -790,7 +784,6 @@ void do_line_feed (void)
 	{
 	  rp = term->MemLockRP->next;
 	  remove_row (rp);
-	  saverp = term->dptr;
 	  insert_before (rp, term->dptr);
 	}
       else
@@ -1302,8 +1295,6 @@ static void do_home_up (void)
 /*
  **  Perform 'Home Up' function
  */
-  int ii;
-
   term->cr = 0;
   term->cc = 0;
 #if defined(MEMLOCK_2000)
@@ -1342,8 +1333,8 @@ void do_home_down (void)
  **  Perform 'Home Down' function
  */
 #if defined(MEMLOCK_2000)
-  struct row *rp, *bptr, *sptr1, *sptr2;
-  int ii, jj, state = 1;
+  struct row *rp, *bptr;
+  int ii = 0, jj;
 
   bptr = find_bottom_row();
 /*
@@ -1486,7 +1477,7 @@ void do_clear_display (void)
    **  Perform 'Clear Display' function
  */
   struct row *rp;
-  int i, j, k;
+  int j, k;
 
   if (term->FormatMode)
   {
@@ -1544,7 +1535,7 @@ void do_clear_line (void)
    **  Perform 'Clear Line' function
  */
   struct row *rp;
-  int i, j;
+  int j;
 /*
    **  Find row cr in memory
  */
@@ -1638,7 +1629,7 @@ void do_delete_line (void)
 /*
    **  Perform 'Delete Line' function
  */
-  struct row *rp, *ip;
+  struct row *rp;
 /*
    **  Ignored if in Format mode
  */
@@ -1966,7 +1957,7 @@ struct hpterm * init_hpterm (void)
 /*
    **  Initialize terminal emulator
  */
-  int i, j;
+  int i;
   struct row *rp;
 
   term = (struct hpterm *) calloc (1, sizeof (struct hpterm));
@@ -3061,7 +3052,7 @@ static void hpterm_rxchar (char ch)
    **  Process character received from remote computer
  */
 {
-  int i, j, ich = (int) (ch) & 0x0ff;
+  int ich = (int) (ch) & 0x0ff;
 #if 0
   extern unsigned char
     out_table[];
@@ -4647,7 +4638,6 @@ static void do_function_button (int i)
    **  Accepts i from 0 to 7
  */
   struct udf *u;
-  int j;
 
   if (term->KeyState == ks_off || term->KeyState == ks_user)
   {

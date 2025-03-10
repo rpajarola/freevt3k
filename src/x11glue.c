@@ -5,8 +5,6 @@
  *
  */
 
-static char const rcsid[] = "$Id: x11glue.c,v 1.1 2003/03/14 16:28:44 randy Exp $";
-
 /*
  * x11glue.c  --  X11 window interface
  *
@@ -113,20 +111,16 @@ char *progname;			/* name this program was invoked by */
 /*******************************************************************/
 void init_disp (int argc, char **argv, char *wintitle, char *fontname)
 {
-  int x, y, i, j;		/* window position */
+  int x, y;		/* window position */
   unsigned int border_width = 4;	/* four pixels */
-  unsigned int display_width, display_height;
-  unsigned int icon_width, icon_height;
   char *icon_name = "freevt3k";
   Pixmap icon_pixmap;
   XSizeHints size_hints;
   XIconSize *size_list;
   int count;
-  char title_name[128];
   char *display_name = NULL;
   int nbrows = 26;
   int nbcols = 80;
-  char ch;
 
   progname = argv[0];
 
@@ -140,8 +134,6 @@ void init_disp (int argc, char **argv, char *wintitle, char *fontname)
 
   /* get screen size from display structure macro */
   screen_num = DefaultScreen (display);
-  display_width = DisplayWidth (display, screen_num);
-  display_height = DisplayHeight (display, screen_num);
 
   /* Note that in a real application, x and y would default to 0
    * but would be settable from the command line or resource database.
@@ -575,66 +567,66 @@ static struct km
 }
 keymap[] =
 {
-    "Break",     XK_Break,    hpterm_kbd_Break,
-    "Menu",      XK_Menu,     hpterm_kbd_Menu,
-    "F1",        XK_F1,       hpterm_kbd_F1,
-    "F2",        XK_F2,       hpterm_kbd_F2,
-    "F3",        XK_F3,       hpterm_kbd_F3,
-    "F4",        XK_F4,       hpterm_kbd_F4,
-    "F5",        XK_F5,       hpterm_kbd_F5,
-    "F6",        XK_F6,       hpterm_kbd_F6,
-    "F7",        XK_F7,       hpterm_kbd_F7,
-    "F8",        XK_F8,       hpterm_kbd_F8,
-    "Home",      XK_Home,     hpterm_kbd_Home,
-    "Left",      XK_Left,     hpterm_kbd_Left,
-    "Right",     XK_Right,    hpterm_kbd_Right,
-    "Down",      XK_Down,     hpterm_kbd_Down,
-    "Up",        XK_Up,       hpterm_kbd_Up,
-    "Prev",      XK_Prior,    hpterm_kbd_Prev,
-    "Next",      XK_Next,     hpterm_kbd_Next,
-    "Select",    XK_Select,   hpterm_kbd_Select,
-    "KP_Enter",  XK_KP_Enter, hpterm_kbd_KP_Enter,
-    "Enter",     XK_Execute,  hpterm_kbd_Enter,
+    {"Break",     XK_Break,    hpterm_kbd_Break},
+    {"Menu",      XK_Menu,     hpterm_kbd_Menu},
+    {"F1",        XK_F1,       hpterm_kbd_F1},
+    {"F2",        XK_F2,       hpterm_kbd_F2},
+    {"F3",        XK_F3,       hpterm_kbd_F3},
+    {"F4",        XK_F4,       hpterm_kbd_F4},
+    {"F5",        XK_F5,       hpterm_kbd_F5},
+    {"F6",        XK_F6,       hpterm_kbd_F6},
+    {"F7",        XK_F7,       hpterm_kbd_F7},
+    {"F8",        XK_F8,       hpterm_kbd_F8},
+    {"Home",      XK_Home,     hpterm_kbd_Home},
+    {"Left",      XK_Left,     hpterm_kbd_Left},
+    {"Right",     XK_Right,    hpterm_kbd_Right},
+    {"Down",      XK_Down,     hpterm_kbd_Down},
+    {"Up",        XK_Up,       hpterm_kbd_Up},
+    {"Prev",      XK_Prior,    hpterm_kbd_Prev},
+    {"Next",      XK_Next,     hpterm_kbd_Next},
+    {"Select",    XK_Select,   hpterm_kbd_Select},
+    {"KP_Enter",  XK_KP_Enter, hpterm_kbd_KP_Enter},
+    {"Enter",     XK_Execute,  hpterm_kbd_Enter},
 #if defined(MEMLOCK_2000)
-    "Clear",     XK_F12,      hpterm_kbd_Clear,
-    "PrintScrn", XK_Print,    dump_display,
+    {"Clear",     XK_F12,      hpterm_kbd_Clear},
+    {"PrintScrn", XK_Print,    dump_display},
 #endif
 /*
    **  Following group needed for HP 715 workstation
  */
 #ifdef hpXK_Reset
-    "Reset",      hpXK_Reset,      hpterm_kbd_Reset,
-    "User",       hpXK_User,       hpterm_kbd_User,
-    "System",     hpXK_System,     hpterm_kbd_System,
-    "ClearLine",  hpXK_ClearLine,  hpterm_kbd_ClearLine,
-    "InsertLine", hpXK_InsertLine, hpterm_kbd_InsertLine,
-    "DeleteLine", hpXK_DeleteLine, hpterm_kbd_DeleteLine,
-    "InsertChar", hpXK_InsertChar, hpterm_kbd_InsertChar,
-    "DeleteChar", hpXK_DeleteChar, hpterm_kbd_DeleteChar,
-    "BackTab",    hpXK_BackTab,    hpterm_kbd_BackTab,
-    "KP_BackTab", hpXK_KP_BackTab, hpterm_kbd_KP_BackTab,
+    {"Reset",      hpXK_Reset,      hpterm_kbd_Reset},
+    {"User",       hpXK_User,       hpterm_kbd_User},
+    {"System",     hpXK_System,     hpterm_kbd_System},
+    {"ClearLine",  hpXK_ClearLine,  hpterm_kbd_ClearLine},
+    {"InsertLine", hpXK_InsertLine, hpterm_kbd_InsertLine},
+    {"DeleteLine", hpXK_DeleteLine, hpterm_kbd_DeleteLine},
+    {"InsertChar", hpXK_InsertChar, hpterm_kbd_InsertChar},
+    {"DeleteChar", hpXK_DeleteChar, hpterm_kbd_DeleteChar},
+    {"BackTab",    hpXK_BackTab,    hpterm_kbd_BackTab},
+    {"KP_BackTab", hpXK_KP_BackTab, hpterm_kbd_KP_BackTab},
 #endif
 /*
    **  Following group needed for Tatung Mariner 4i with AT keyboard
  */
-    "F9",         XK_F9,     hpterm_kbd_Menu,
-    "F10",        XK_F10,    hpterm_kbd_User,
+    {"F9",         XK_F9,     hpterm_kbd_Menu},
+    {"F10",        XK_F10,    hpterm_kbd_User},
 #if defined(MEMLOCK_2000)
-    "F11",        XK_F11,    hpterm_kbd_System,
-    "Break",      XK_Pause,  hpterm_kbd_Break,
+    {"F11",        XK_F11,    hpterm_kbd_System},
+    {"Break",      XK_Pause,  hpterm_kbd_Break},
 #else
-    "F11", 	  0x1000FF10,hpterm_kbd_System,
-    "Break",      XK_F23,    hpterm_kbd_Break,
+    {"F11", 	  0x1000FF10,hpterm_kbd_System},
+    {"Break",      XK_F23,    hpterm_kbd_Break},
 #endif
-    "PageUp",     XK_F29,    hpterm_kbd_Prev,
-    "PageDown",   XK_F35,    hpterm_kbd_Next,
-    "Home",       XK_F27,    hpterm_kbd_Home,
-    "End",        XK_F33,    hpterm_kbd_HomeDown,
+    {"PageUp",     XK_F29,    hpterm_kbd_Prev},
+    {"PageDown",   XK_F35,    hpterm_kbd_Next},
+    {"Home",       XK_F27,    hpterm_kbd_Home},
+    {"End",        XK_F33,    hpterm_kbd_HomeDown},
 #if defined(MEMLOCK_2000)
-    "InsertChar", XK_Insert, hpterm_kbd_InsertChar,
-    "DeleteChar", XK_Delete, hpterm_kbd_DeleteChar,
+    {"InsertChar", XK_Insert, hpterm_kbd_InsertChar},
+    {"DeleteChar", XK_Delete, hpterm_kbd_DeleteChar},
 #endif
-     0,           0,         0
+    { 0,           0,         0}
 };
 
 
@@ -862,7 +854,6 @@ void disp_drawtext (style, row, col, buf, nbuf)
 #else
   int font_height, font_width = CHAR_WIDTH;
 #endif
-  int ii;
   GC gc;
 
   font_height = font_info->ascent + font_info->descent;
@@ -1134,7 +1125,6 @@ int main (int argc, char **argv)
 	     (strcmp(*argv, "-otable") == 0) ||
 	     (strcmp(*argv, "-table") == 0))
       {
-	extern int table_spec;
 	int i_type = 1;
 	if (strcmp(*argv, "-otable") == 0)
 	  ++i_type;

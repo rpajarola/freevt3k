@@ -421,9 +421,8 @@ void ProcessInterrupt(void)
   for (;;)
     {
       printf("Please enter FREEVT3K command (Exit or Continue) : ");
-      fgets(ans, sizeof(ans), stdin);
-      if (strlen(ans) == 0)
-	continue;
+      if (fgets(ans, sizeof(ans), stdin) == NULL) continue;
+      if (strlen(ans) == 0) continue;
       if (islower(*ans))
 	*ans = (char)toupper(*ans);
       if (*ans == 'E')
@@ -808,7 +807,6 @@ int ProcessSocket(tVTConnection * conn)
  * the TTY for "raw" operation. (Or, it will
  * once we get that set up.)
  */
-/*     	vtOpen = TRUE; */
     }
   else if (whichError != kVTCNoError)
     {
@@ -1070,7 +1068,6 @@ void CloseTTY(int fd, PTERMIO old_termio)
 int DoMessageLoop(tVTConnection * conn)
 { /*DoMessageLoop*/
   int
-    whichError,
     returnValue = 0;
   ssize_t
     readCount;
@@ -1087,15 +1084,12 @@ int DoMessageLoop(tVTConnection * conn)
     nfds = 0;
   char
     termBuffer[2];
-  /*  tBoolean    vtOpen; */
   int32_t
     start_time = 0,
     read_timer = 0,
     time_remaining = 0;
   bool
     timed_read = false;
-  char
-    messageBuffer[128];
   int
     vtSocket;
   extern FILE
@@ -1233,7 +1227,7 @@ void vt3kDataOutProc(int32_t refCon, char * buffer, size_t bufferLength)
   if (log_type & LOG_OUTPUT) 
     Logit (LOG_OUTPUT, buffer, bufferLength, true);
 
-  write(STDOUT_FILENO, buffer, bufferLength);
+  if (write(STDOUT_FILENO, buffer, bufferLength)) {}
 } /*vt3kDataOutProc*/
 
 #ifndef XHPTERM

@@ -126,7 +126,6 @@ Last:
 int read_vt3k_data (tVTConnection * theConnection) {
 
     int whichError;
-    bool vtOpen=false;
     bool done=false;
     char messageBuffer[128];
     static char trigger[] = { 17 };
@@ -137,7 +136,6 @@ int read_vt3k_data (tVTConnection * theConnection) {
     if (whichError == kVTCVTOpen)
 	{
 	/* Now the connection is _really_ open */
-	vtOpen=true;
 	}
     else if (whichError != kVTCNoError) {
 	{

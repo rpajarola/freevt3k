@@ -212,7 +212,7 @@ int read_tty_data (int s /* File number */)
 **  Returns non-zero on port eof
 */
 {
-    int flags,len;
+    int len;
     char buf[2048];
     size_t bufsize = sizeof(buf) / sizeof(buf[0]);
 
@@ -239,9 +239,8 @@ int send_tty_data (int s /* file number */,
 **  Return non-zero on port eof
 */
 {
-    int flags,len;
+    int len;
 
-    flags = 0;
     len = write (s, buf, nbuf);
     if (len < nbuf) {
         show_tty_error ("write()", errno);

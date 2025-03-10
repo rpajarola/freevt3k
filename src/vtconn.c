@@ -40,7 +40,7 @@ int
 
 static void DefaultDataOutProc(int32_t refCon, char * buffer, size_t bufferLength)
 { /*DefaultDataOutProc*/
-    write(STDOUT_FILENO, buffer, bufferLength);
+    if (write(STDOUT_FILENO, buffer, bufferLength)) {}
 } /*DefaultDataOutProc*/
 
 static int SendToAM(tVTConnection * conn, 
@@ -159,7 +159,7 @@ static int ProcessAMNegotiationRequest(tVTConnection * conn)
     amresp.fResponseCode = htons(kAMNRSuccessful);
     amresp.fCompletionMask = htons(kAMNRSuccessful);
     amresp.fBufferSize = htons(conn->fSendBufferSize);
-    amresp.fVersionMask[0] = 0xd0;	/* Just copied */
+    amresp.fVersionMask[0] = (unsigned char)0xd0;	/* Just copied */
     amresp.fVersionMask[3] = 100;       /* Official ID for freevt3k */
     amresp.fOperatingSystem = htons(kReturnOSType);
     amresp.fHardwareControlCompletionMask = 
@@ -185,9 +185,12 @@ static int ProcessAMNegotiationRequest(tVTConnection * conn)
 	memcpy(tmreq.fSessionID, pid_buf, sizeof(tmreq.fSessionID));
 
 	gethostname(hostName, sizeof(hostName));
-	getdomainname(domainName, sizeof(domainName));
-	strcat(hostName, ".");
-	strcat(hostName, domainName);
+	if (getdomainname(domainName, sizeof(domainName)) != 0) {
+        domainName[0] = 0;
+    } else {
+	    strcat(hostName, ".");
+	    strcat(hostName, domainName);
+    }
 
 	nodeNameLength = strlen(hostName);
 	if (nodeNameLength > sizeof(tmreq.fNodeName))
@@ -227,8 +230,6 @@ static int ProcessTMNegotiationResponse(tVTConnection * conn)
 static int ProcessTerminationResponse(tVTConnection * conn)
 { /*ProcessTerminationResponse*/
     int returnValue = kVTCNoError;
-    tVTMTerminationResponse * termresp = (tVTMTerminationResponse *) 
-           					conn->fReceiveBuffer;
 
     /* What to do if the termination request is denied? */
 

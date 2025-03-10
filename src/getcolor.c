@@ -19,6 +19,7 @@ extern Screen *screen_ptr;
 extern char *progname;
 
 
+#if DEBUG_GET_COLORS		
 static char *visual_class[] = {
 "StaticGray",
 "GrayScale",
@@ -27,6 +28,7 @@ static char *visual_class[] = {
 "TrueColor",
 "DirectColor"
 };
+#endif
 
 int get_colors(nb_colors, color_names, color_codes)
 
