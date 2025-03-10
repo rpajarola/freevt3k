@@ -32,15 +32,9 @@
 #include <netinet/in.h>
 #endif
 
-#if !defined(MEMLOCK_2000)
 #  define USE_9X15     1
-#endif
 
 #ifdef USE_9X15
-#  if !defined(MEMLOCK_2000)
-#    define CHAR_WIDTH	9
-#    define CHAR_HEIGHT	15
-#  endif
 #  define FONT_NAME	"9x15"
 #else
 #  define FONT_NAME	"-adobe-courier-medium-r-normal--*-140-75-75-m-*-iso8859-1"
@@ -396,7 +390,6 @@ void event_loop (void)
 	    printf ("%d", buffer[ii]);
 	  }
 	  printf (">");
-#if defined(MEMLOCK_2000)
 	  if (report.xkey.state)
 	  {
 	    printf ("[%x,%lx]\n", report.xkey.state, keysym);
@@ -406,15 +399,10 @@ void event_loop (void)
 	    printf ("[%lx]\n", keysym);
 	  }
 	  printf ("KeySym  [%s]\n", XKeysymToString (keysym));
-#endif
 	  fflush (stdout);
 	}
 
-#if defined(MEMLOCK_2000)
 	if (!keymapper (keysym, report.xkey.state, buffer, charcount))
-#else
-	if (!keymapper (keysym, report.xkey.state))
-#endif
 	{
 	  if (charcount == 1)
 	  {
@@ -568,10 +556,8 @@ keymap[] =
     {"Select",    XK_Select,   hpterm_kbd_Select},
     {"KP_Enter",  XK_KP_Enter, hpterm_kbd_KP_Enter},
     {"Enter",     XK_Execute,  hpterm_kbd_Enter},
-#if defined(MEMLOCK_2000)
     {"Clear",     XK_F12,      hpterm_kbd_Clear},
     {"PrintScrn", XK_Print,    dump_display},
-#endif
 /*
    **  Following group needed for HP 715 workstation
  */
@@ -592,26 +578,18 @@ keymap[] =
  */
     {"F9",         XK_F9,     hpterm_kbd_Menu},
     {"F10",        XK_F10,    hpterm_kbd_User},
-#if defined(MEMLOCK_2000)
     {"F11",        XK_F11,    hpterm_kbd_System},
     {"Break",      XK_Pause,  hpterm_kbd_Break},
-#else
-    {"F11", 	  0x1000FF10,hpterm_kbd_System},
-    {"Break",      XK_F23,    hpterm_kbd_Break},
-#endif
     {"PageUp",     XK_F29,    hpterm_kbd_Prev},
     {"PageDown",   XK_F35,    hpterm_kbd_Next},
     {"Home",       XK_F27,    hpterm_kbd_Home},
     {"End",        XK_F33,    hpterm_kbd_HomeDown},
-#if defined(MEMLOCK_2000)
     {"InsertChar", XK_Insert, hpterm_kbd_InsertChar},
     {"DeleteChar", XK_Delete, hpterm_kbd_DeleteChar},
-#endif
     { 0,           0,         0}
 };
 
 
-#if defined(MEMLOCK_2000)
 int keymapper (KeySym keysym, unsigned int state, char *buffer, int charcount)
 {
 /*
@@ -742,86 +720,6 @@ int keymapper (KeySym keysym, unsigned int state, char *buffer, int charcount)
   }
   return (0);
 }
-#else
-int keymapper (KeySym keysym, unsigned int state) {
-/*
-**  Attempt to map the key to a special function
-**  If key maps, call the function and return 1
-**  If key does not map, return 0
-*/
-    int ii;
-
-    if (DEBUG_KEYSYMS) {
-	if (state) {
-	    printf ("[%x,%lx]", state, keysym);
-        } else {
-            printf ("[%lx]", keysym);
-        }
-        fflush (stdout);
-    }
-/*
-**  Following group needed for HP 715 workstation
-*/
-    if (state & ShiftMask) {
-	if (keysym == XK_Up) {
-	    hpterm_kbd_RollUp();
-	    return (1);
-        }
-	if (keysym == XK_Down) {
-	    hpterm_kbd_RollDown();
-	    return (1);
-        }
-	if (keysym == XK_Home) {
-	    hpterm_kbd_HomeDown();
-	    return (1);
-        }
-    }
-/*
-**  Following group needed for Tatung Mariner 4i with AT keyboard
-*/
-    if (state & ShiftMask) {
-        if (keysym == XK_KP_8) {
-            hpterm_kbd_RollUp();
-            return (1);
-        }
-        if (keysym == XK_KP_2) {
-            hpterm_kbd_RollDown();
-            return (1);
-        }
-        if (keysym == XK_Tab) {
-            hpterm_kbd_BackTab();
-            return (1);
-        }
-    }
-/*
-**  Following to allow Reflections compatible ALT accelerators
-**   ...but is doesn't work...
-*/
-    if (state & Mod2Mask) {
-        if (keysym == XK_1) {
-            hpterm_kbd_F1();
-            return (1);
-        } else if (keysym == XK_2) {
-            hpterm_kbd_F2();
-            return (1);
-        } else if (keysym == XK_M || keysym == XK_m) {
-            hpterm_kbd_Menu();
-            return (1);
-        }
-    }
-/*
-**  No special cases - now search the table
-*/
-    for (ii=0; keymap[ii].keyname; ii++) {
-	if (keymap[ii].keysym == keysym) {
-	   (*(keymap[ii].keyfunc))();
-	   return (1);
-        }
-    }
-    return (0);
-}
-#endif
-
 
 void disp_drawtext (
      int style,			/* Low order 4 bits of display enhancements escape code */
@@ -830,17 +728,11 @@ void disp_drawtext (
      char *buf,			/* String to display */
      int nbuf)			/* Number of chars to display */
 {
-#if defined(MEMLOCK_2000)
   int font_height, font_width;
-#else
-  int font_height, font_width = CHAR_WIDTH;
-#endif
   GC gc;
 
   font_height = font_info->ascent + font_info->descent;
-#if defined(MEMLOCK_2000)
   font_width = font_info->max_bounds.width;
-#endif
 
   if (style & HPTERM_BLINK_MASK)
   {
@@ -890,16 +782,9 @@ void disp_drawtext (
 
 void disp_erasetext (int row, int col, int nchar)
 {
-  int font_height;
-#if defined(MEMLOCK_2000)
-  int font_width;
-#else
-  int font_width = CHAR_WIDTH;
-#endif
+  int font_height, font_width;
 
-#if defined(MEMLOCK_2000)
   font_width = (font_info->max_bounds.width);
-#endif
   font_height = font_info->ascent + font_info->descent;
 
   XFillRectangle (display, win, gc_inverse,
@@ -909,17 +794,10 @@ void disp_erasetext (int row, int col, int nchar)
 
 void disp_drawcursor (int style, int row, int col)
 {
-  int font_height;
-#if defined(MEMLOCK_2000)
-  int font_width;
-#else
-  int font_width = CHAR_WIDTH;
-#endif
+  int font_height, font_width;
 
   font_height = font_info->ascent + font_info->descent;
-#if defined(MEMLOCK_2000)
   font_width = font_info->max_bounds.width;
-#endif
   if (style & HPTERM_INVERSE_MASK)
   {
 

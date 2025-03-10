@@ -204,7 +204,7 @@ void update_cursor (void)
       disp_drawcursor (style, term->cr, term->cc);
   }
 }
-#if defined(MEMLOCK_2000)
+
 /******************************************************************/
 void dump_display (void)
 {
@@ -232,7 +232,7 @@ void dump_display (void)
   }
   fclose (dumpFd);
 }
-#endif
+
 /******************************************************************/
 void update_display (void)
 {
@@ -714,7 +714,6 @@ void do_line_feed (void)
 	  clear_row (rp);
 	  insert_after (rp, term->tail);
 	}
-#if defined(MEMLOCK_2000)
       if (term->MemoryLock)
 	{
 	  rp = term->MemLockRP->next;
@@ -722,7 +721,6 @@ void do_line_feed (void)
 	  insert_before (rp, term->dptr);
 	}
       else
-#endif
 	term->dptr = term->dptr->next;
       term->update_all = 1;
       term->cr--;
@@ -753,11 +751,9 @@ int is_cursor_protected (void)
     {
       if (rp->disp[ee] & HPTERM_START_FIELD)
 	{
-#if defined(MEMLOCK_2000)
 	  if (term->cc >= rp->nbchars)
 	    return (1);
 	  else
-#endif
 	    return (0);
 	}
       if (rp->disp[ee] & HPTERM_END_FIELD)
@@ -796,11 +792,7 @@ void goto_next_field (void)
   rp = find_cursor_row ();
   while (rp)
     {
-#if defined(MEMLOCK_2000)
       while (term->cc <= rp->nbchars)
-#else
-      while (term->cc < rp->nbchars)
-#endif
 	{
 	  if (rp->disp[term->cc] & HPTERM_START_FIELD)
 	    {
@@ -1060,11 +1052,9 @@ static void set_start_field (void)
   rp->disp[term->cc] = (rp->disp[term->cc] & 0x1F) | HPTERM_START_FIELD;
   if (term->cc >= rp->nbchars)
     rp->nbchars = term->cc + 1;
-#if defined(MEMLOCK_2000)
 #if DEBUG_BLOCK_MODE
   printf ("START_FIELD cc=%d,cr=%d\n", term->cc, term->cr);
   fflush (stdout);
-#endif
 #endif
 }
 /*****************************************************************/
@@ -1086,11 +1076,9 @@ static void set_end_field (void)
   rp->disp[term->cc] = (rp->disp[term->cc] & 0x1F) | HPTERM_END_FIELD;
   if (term->cc >= rp->nbchars)
     rp->nbchars = term->cc + 1;
-#if defined(MEMLOCK_2000)
 #if DEBUG_BLOCK_MODE
   printf ("END_FIELD cc=%d,cr=%d\n", term->cc, term->cr);
   fflush (stdout);
-#endif
 #endif
 }
 /*****************************************************************/
@@ -1232,7 +1220,6 @@ static void do_home_up (void)
  */
   term->cr = 0;
   term->cc = 0;
-#if defined(MEMLOCK_2000)
   if(term->MemoryLock)
   {
     if(term->dptr->prev != NULL)
@@ -1244,7 +1231,6 @@ static void do_home_up (void)
     term->cr = term->MemLockRow + 1;
   }
   else
-#endif
     term->dptr = term->head;
 
   if (term->FormatMode)
@@ -1267,7 +1253,6 @@ void do_home_down (void)
 /*
  **  Perform 'Home Down' function
  */
-#if defined(MEMLOCK_2000)
   struct row *rp, *bptr;
   int ii = 0, jj;
 
@@ -1372,38 +1357,6 @@ void do_home_down (void)
   do_carriage_return ();
   do_line_feed ();
   term->update_all = 1;
-#else
-  struct row *rp;
-  int ii, jj;
-
-/*
-**  Find last line of memory that is in use
-*/
-    rp = term->tail;
-    while (!rp->nbchars && rp->prev) {
-	rp = rp->prev;
-    }
-/*
-**  Put cursor column at end of this line
-*/
-    term->cc = rp->nbchars;
-/*
-**  Position this line as low on the display as possible
-*/
-    term->cr=0;
-    while (rp->prev && ((term->cr)+1 < term->nbrows)) {
-	rp = rp->prev;
-	term->cr++;
-    }
-    term->dptr = rp;
-/*
-**  Now do a carriage return and line feed to put cursor on a blank line
-*/
-    do_carriage_return();
-    do_line_feed();
-    
-    term->update_all = 1;
-#endif
 }
 /*****************************************************************/
 void do_clear_display (void)
@@ -1522,13 +1475,11 @@ void do_insert_line (void)
  */
   if (term->FormatMode)
     return;
-#if defined(MEMLOCK_2000)
 /*
    **  Ignored if inside Memory Lock area
  */
   if (term->MemoryLock && term->cr <= term->MemLockRow)
     return;
-#endif
 /*
    **  Find row cr in memory
  */
@@ -1570,13 +1521,11 @@ void do_delete_line (void)
  */
   if (term->FormatMode)
     return;
-#if defined(MEMLOCK_2000)
 /*
    **  Ignored if inside Memory Lock area
  */
   if (term->MemoryLock && term->cr <= term->MemLockRow)
     return;
-#endif
 /*
    **  Find row cr in memory
  */
@@ -1614,7 +1563,6 @@ void do_roll_up (void)
   rp = find_bottom_row ();
   if (rp->next)
   {
-#if defined(MEMLOCK_2000)
     if (term->MemoryLock)
     {
       rp = term->MemLockRP->next;
@@ -1622,7 +1570,6 @@ void do_roll_up (void)
       insert_before (rp, term->dptr);
     }
     else
-#endif
       term->dptr = term->dptr->next;
     term->update_all = 1;
   }
@@ -1635,7 +1582,6 @@ void do_roll_down (void)
  */
   if (term->dptr->prev)
   {
-#if defined(MEMLOCK_2000)
     if (term->MemoryLock)
     {
       struct row *rp;
@@ -1644,7 +1590,6 @@ void do_roll_down (void)
       insert_after (rp, term->MemLockRP);
     }
     else
-#endif
       term->dptr = term->dptr->prev;
     term->update_all = 1;
   }
@@ -1658,7 +1603,6 @@ void do_next_page (void)
   struct row *rp;
   int ii;
 
-#if defined(MEMLOCK_2000)
   if(term->MemoryLock)
   {
     ii = term->nbrows - term->MemLockRow;
@@ -1669,7 +1613,6 @@ void do_next_page (void)
     }
   }
   else
-#endif
   {
     rp = find_bottom_row ();
     ii = term->nbrows;
@@ -1690,7 +1633,6 @@ void do_previous_page (void)
  */
   int ii;
 
-#if defined(MEMLOCK_2000)
   if(term->MemoryLock)
   {
     ii = term->nbrows - term->MemLockRow;
@@ -1701,7 +1643,6 @@ void do_previous_page (void)
     }
   }
   else
-#endif
   {
     ii = term->nbrows;
     while (ii && term->dptr->prev)
@@ -1901,11 +1842,7 @@ struct hpterm * init_hpterm (void)
   term->FldSeparator = 29;
   term->BlkTerminator = 30;
   term->TabStops = (char *) calloc (1, 132);
-#if defined(MEMLOCK_2000)
   for (i = 0; i < 960; i++)
-#else
-  for (i = 0; i < 480; i++)
-#endif
   {
     rp = (struct row *) calloc (1, sizeof (struct row));
     rp->text = (char *) calloc (1, 132);
@@ -1944,11 +1881,9 @@ struct hpterm * init_hpterm (void)
   term->menu2->disp = (char *) calloc (1, 132);
   reset_user_keys ();
   term->UserSystem = 1;
-#if defined(MEMLOCK_2000)
   term->MemLockRow = 0;
   term->MemoryLock = 0;
   term->MemLockRP  = 0;
-#endif
   term->cr = 0;
   term->cc = 0;
 
@@ -2034,10 +1969,8 @@ void hpterm_winsize (int nbrows, int nbcols)
   if (term->MemLockRow >= nbrows)
   {
     term->MemoryLock = 0;
-#if defined(MEMLOCK_2000)
     term->MemLockRP = 0;
     term->MemLockRow = 0;
-#endif
     if (term->KeyState == ks_modes)
       update_labels ();
   }
@@ -2369,11 +2302,9 @@ void send_enter_data (void)
  */
     int i, j;
     struct udf *u;
-#if defined(MEMLOCK_2000)
 #if DEBUG_BLOCK_MODE
     printf ("Block mode transfer of function key definitions\n");
     fflush (stdout);
-#endif
 #endif
 
     for (i = 0; i < 8; i++)
@@ -2416,11 +2347,9 @@ void send_enter_data (void)
 /*
    **      Block Line Mode, Format Off
  */
-#if defined(MEMLOCK_2000)
 #if DEBUG_BLOCK_MODE
     printf ("Block Line Mode, Format Off\n");
     fflush (stdout);
-#endif
 #endif
     rp = find_cursor_row ();
     if (term->InhDC2_H)
@@ -2448,11 +2377,9 @@ void send_enter_data (void)
 /*
    **      Block Line Mode, Format On
  */
-#if defined(MEMLOCK_2000)
 #if DEBUG_BLOCK_MODE
     printf ("Block Line Mode, Format On\n");
     fflush (stdout);
-#endif
 #endif
     if (is_cursor_protected ())
       goto_next_field ();
@@ -2481,11 +2408,9 @@ void send_enter_data (void)
 /*
    **      Block Page Mode, Format Off
  */
-#if defined(MEMLOCK_2000)
 #if DEBUG_BLOCK_MODE
     printf ("Block Page Mode, Format Off\n");
     fflush (stdout);
-#endif
 #endif
     if (term->InhDC2_H)
       do_home_up ();
@@ -2531,11 +2456,9 @@ void send_enter_data (void)
 /*
    **      Block Page Mode, Format On
  */
-#if defined(MEMLOCK_2000)
 #if DEBUG_BLOCK_MODE
     printf ("Block Page Mode, Format On\n");
     fflush (stdout);
-#endif
 #endif
     if (term->InhDC2_H)
       do_home_up ();
@@ -2547,14 +2470,11 @@ void send_enter_data (void)
       if (is_cursor_protected ())
       {
 	goto_next_field ();
-#if defined(MEMLOCK_2000)
 #if DEBUG_BLOCK_MODE
 	printf ("is_cursor_protected true (goto next)\n");
 	fflush (stdout);
 #endif
-#endif
       }
-#if defined(MEMLOCK_2000)
 #if DEBUG_BLOCK_MODE
       else
       {
@@ -2562,34 +2482,27 @@ void send_enter_data (void)
 	fflush (stdout);
       }
 #endif
-#endif
       if (is_cursor_protected ())
       {
 	done = 1;
-#if defined(MEMLOCK_2000)
 #if DEBUG_BLOCK_MODE
 	printf ("is_cursor_protected done=1\n");
 	fflush (stdout);
 #endif
-#endif
       }
       else
       {
-#if defined(MEMLOCK_2000)
 #if DEBUG_BLOCK_MODE
 	printf ("lc ");
 	fflush (stdout);
-#endif
 #endif
 	if (count)
 	{
 	  term->dctxbuff[term->dctxtail++] = term->FldSeparator;
 	  term_flush_tx (term);
-#if defined(MEMLOCK_2000)
 #if DEBUG_BLOCK_MODE
 	  printf ("tf ");
 	  fflush (stdout);
-#endif
 #endif
 	}
 	rp = find_cursor_row ();
@@ -2597,19 +2510,15 @@ void send_enter_data (void)
 	if (blkterm)
 	{
 	  done = 1;
-#if defined(MEMLOCK_2000)
 #if DEBUG_BLOCK_MODE
 	  printf ("BlkTerminator done=1\n");
 	  fflush (stdout);
 #endif
-#endif
 	}
 	count++;
-#if defined(MEMLOCK_2000)
 #if DEBUG_BLOCK_MODE
 	printf ("sf\n");
 	fflush (stdout);
-#endif
 #endif
       }
     }
@@ -2621,11 +2530,9 @@ void send_enter_data (void)
 /*
    **      Character Mode, Format On
  */
-#if defined(MEMLOCK_2000)
 #if DEBUG_BLOCK_MODE
     printf ("Character Mode, Format On\n");
     fflush (stdout);
-#endif
 #endif
     if (is_cursor_protected ())
       goto_next_field ();
@@ -2652,11 +2559,9 @@ void send_enter_data (void)
 /*
    **      Modify Mode
  */
-#if defined(MEMLOCK_2000)
 #if DEBUG_BLOCK_MODE
     printf ("Modify Mode\n");
     fflush (stdout);
-#endif
 #endif
     rp = find_cursor_row ();
     term->cc = ccsave = term->StartCol;
@@ -2690,11 +2595,9 @@ void send_enter_data (void)
 /*
    **      Character Mode, Format off, Modify off
  */
-#if defined(MEMLOCK_2000)
 #if DEBUG_BLOCK_MODE
     printf ("Normal character mode\n");
     fflush (stdout);
-#endif
 #endif
     rp = find_cursor_row ();
     term->cc = term->LeftMargin;
@@ -3379,14 +3282,10 @@ static void hpterm_rxchar (char ch)
     else if (ich == 'l')
     {
       term->MemoryLock = 1;
-#if defined(MEMLOCK_2000)
       term->MemLockRow = term->cr - 1;
       term->cr = term->cr - 1;
       term->MemLockRP = find_cursor_row ();
       term->cr = term->cr + 1;
-#else
-      term->MemLockRow = term->cr;
-#endif
       if (term->KeyState == ks_modes)
 	update_labels ();
       term->state = 0;
@@ -3394,10 +3293,8 @@ static void hpterm_rxchar (char ch)
     else if (ich == 'm')
     {
       term->MemoryLock = 0;
-#if defined(MEMLOCK_2000)
       term->MemLockRP  = 0;
       term->MemLockRow = 0;
-#endif
       if (term->KeyState == ks_modes)
 	      update_labels ();
       term->state = 0;
@@ -3524,9 +3421,7 @@ static void hpterm_rxchar (char ch)
     }
     else if (ich == 'r')
     {
-#if defined(MEMLOCK_2000)
       if (!term->MemoryLock)
-#endif
 	do_esc_amper_a_r (term->parm);
       term->parm = 0;
     }
@@ -3544,9 +3439,7 @@ static void hpterm_rxchar (char ch)
     }
     else if (ich == 'R')
     {
-#if defined(MEMLOCK_2000)
       if (!term->MemoryLock)
-#endif
 	do_esc_amper_a_r (term->parm);
       term->state = 0;
     }
@@ -3571,9 +3464,7 @@ static void hpterm_rxchar (char ch)
     }
     else if (ich == 'r')
     {
-#if defined(MEMLOCK_2000)
       if (!term->MemoryLock)
-#endif
 	do_esc_amper_a_plus_r (term->parm);
       term->parm = 0;
       term->state = 3;
@@ -3587,9 +3478,7 @@ static void hpterm_rxchar (char ch)
     }
     else if (ich == 'R')
     {
-#if defined(MEMLOCK_2000)
       if (!term->MemoryLock)
-#endif
 	do_esc_amper_a_plus_r (term->parm);
       term->state = 0;
     }
@@ -3614,9 +3503,7 @@ static void hpterm_rxchar (char ch)
     }
     else if (ich == 'r')
     {
-#if defined(MEMLOCK_2000)
       if (!term->MemoryLock)
-#endif
 	do_esc_amper_a_minus_r (term->parm);
       term->parm = 0;
       term->state = 3;
@@ -3630,9 +3517,7 @@ static void hpterm_rxchar (char ch)
     }
     else if (ich == 'R')
     {
-#if defined(MEMLOCK_2000)
       if (!term->MemoryLock)
-#endif
 	do_esc_amper_a_minus_r (term->parm);
       term->state = 0;
     }
@@ -3790,27 +3675,23 @@ static void hpterm_rxchar (char ch)
       {
 	do_function_button (term->keyn - 1);
 	term->state = 0;
-#if defined(MEMLOCK_2000)
 	term->parm = 0;
 	term->sign = 1;
 	term->attr = 0;
 	term->keyn = 1;
 	term->llen = 0;
 	term->slen = 1;
-#endif
       }
       else if (term->keyn == -1)
       {
 	hpterm_kbd_Enter ();
 	term->state = 0;
-#if defined(MEMLOCK_2000)
 	term->parm = 0;
 	term->sign = 1;
 	term->attr = 0;
 	term->keyn = 1;
 	term->llen = 0;
 	term->slen = 1;
-#endif
       }
     }
     else if (ich == 'a' || ich == 'A')
@@ -3840,14 +3721,12 @@ static void hpterm_rxchar (char ch)
     else
     {
       term->state = 0;
-#if defined(MEMLOCK_2000)
       term->parm = 0;
       term->sign = 1;
       term->attr = 0;
       term->keyn = 1;
       term->llen = 0;
       term->slen = 1;
-#endif
     }
     if (ich == 'A' || ich == 'K' || ich == 'D' || ich == 'L')
     {
@@ -3878,14 +3757,12 @@ static void hpterm_rxchar (char ch)
 	else
 	{
 	  term->state = 0;
-#if defined(MEMLOCK_2000)
 	  term->parm = 0;
 	  term->sign = 1;
 	  term->attr = 0;
 	  term->keyn = 1;
 	  term->llen = 0;
 	  term->slen = 1;
-#endif
 	}
       }
       else if (term->keyn == 0 || term->keyn == -1)
@@ -3896,14 +3773,12 @@ static void hpterm_rxchar (char ch)
       else
       {
 	term->state = 0;
-#if defined(MEMLOCK_2000)
 	term->parm = 0;
 	term->sign = 1;
 	term->attr = 0;
 	term->keyn = 1;
 	term->llen = 0;
 	term->slen = 1;
-#endif
       }
     }
     break;
@@ -3921,14 +3796,12 @@ static void hpterm_rxchar (char ch)
       else
       {
 	term->state = 0;
-#if defined(MEMLOCK_2000)
 	term->parm = 0;
 	term->sign = 1;
 	term->attr = 0;
 	term->keyn = 1;
 	term->llen = 0;
 	term->slen = 1;
-#endif
       }
     }
     break;
@@ -3939,14 +3812,12 @@ static void hpterm_rxchar (char ch)
     if (term->nparm == term->slen)
     {
       term->state = 0;
-#if defined(MEMLOCK_2000)
       term->parm = 0;
       term->sign = 1;
       term->attr = 0;
       term->keyn = 1;
       term->llen = 0;
       term->slen = 1;
-#endif
     }
     break;
 
@@ -4348,7 +4219,6 @@ void hpterm_kbd_System (void)
   }
   update_labels ();
 }
-#if defined(MEMLOCK_2000)
 /*************************************************************************/
 void hpterm_kbd_Modes (void)
 {
@@ -4358,14 +4228,11 @@ void hpterm_kbd_Modes (void)
   }
   update_labels ();
 }
-#endif
-#if defined(MEMLOCK_2000)
 /*************************************************************************/
 void hpterm_kbd_Clear (void)
 {
   process_keyboard_A ("\033J", 2);
 }
-#endif
 /*************************************************************************/
 void hpterm_kbd_ClearLine (void)
 {

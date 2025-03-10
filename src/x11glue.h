@@ -23,20 +23,11 @@ extern FILE
 extern int
   log_type;
 
-#if defined(MEMLOCK_2000)
 void init_disp (int argc, char **argv, char *hostname, char *font1);
-#else
-void init_disp(int argc, char **argv);
-#endif
 void event_loop (void);
 void getGC (Window win, GC * gc, XFontStruct * font_info);
-#if defined(MEMLOCK_2000)
 void load_font (XFontStruct ** font_info, char *font1);
 int keymapper (KeySym keysym, unsigned int state, char *buffer, int charcount);
-#else
-int load_font(XFontStruct **font_info);
-int keymapper (KeySym keysym, unsigned int state);
-#endif
 void disp_drawtext (int style, int row, int col, char *buf, int nbuf);
 void disp_erasetext (int row, int col, int nchar);
 void disp_drawcursor (int style, int row, int col);

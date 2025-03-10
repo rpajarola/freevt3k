@@ -9,8 +9,6 @@
 #define IGNORE_KEYBOARD_LOCK 1
 #define IGNORE_USER_SYSTEM_LOCK 1
 
-#define MEMLOCK_2000
-
 /*********************************************************************/
 struct row
 {
@@ -197,9 +195,7 @@ struct hpterm
   int cr;			/* Cursor row number, 0..nbrows-1 */
   int cc;			/* Cursor column number, 0..nbcols-1 */
   struct row *dptr;		/* Pointer to first row on screen */
-#if defined(MEMLOCK_2000)
   struct row *MemLockRP;	/* Pointer to last locked row on screen */
-#endif
   int nbrows;			/* Number of rows on screen, default=24 */
   int nbcols;			/* Number of columns on screen, 80 or 132 */
 /*
@@ -239,10 +235,8 @@ struct hpterm
 
 void set_display_functions (void);
 void clear_display_functions (void);
-#if defined(MEMLOCK_2000)
 void do_roll_down(void);
 void do_roll_up(void);
-#endif
 struct hpterm * init_hpterm (void);
 void hpterm_winsize (int nbrows, int nbcols);
 void hpterm_mouse_click (int row, int col);
@@ -255,10 +249,8 @@ void hpterm_kbd_Break (void);
 void hpterm_kbd_Menu (void);
 void hpterm_kbd_User (void);
 void hpterm_kbd_System (void);
-#if defined(MEMLOCK_2000)
 void hpterm_kbd_Modes (void);
 void hpterm_kbd_Clear (void);
-#endif
 void hpterm_kbd_ClearDisplay (void);
 void hpterm_kbd_ClearLine (void);
 void hpterm_kbd_InsertLine (void);
@@ -288,6 +280,4 @@ void hpterm_kbd_HomeDown (void);
 void hpterm_kbd_Enter (void);
 void hpterm_kbd_Select (void);
 void hpterm_kbd_KP_Enter (void);
-#if defined(MEMLOCK_2000)
 void dump_display (void);
-#endif
