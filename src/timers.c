@@ -63,25 +63,3 @@ int32_t ElapsedTime(int32_t start_time)
     return(MyGettimeofday() - start_time);
 
 } /*ElapsedTime*/
-#ifdef INCLUDE_WALLTIME
-
-void WallTime(void)
-{ /*WallTime*/
-
-    time_t
-	ltime;
-    struct tm
-	*tmNow;
-    int
-	ms;
-    extern FILE
-	*debug_fd;
-
-    time(&ltime);
-    tmNow = localtime(&ltime);
-    ms = (int)(MyGettimeofday() % 1000);
-    fprintf(debug_fd, "%02d:%02d:%02d.%03d: ",
-	    tmNow->tm_hour, tmNow->tm_min, tmNow->tm_sec, ms);
-    
-} /*WallTime*/
-#endif /*INCLUDE_WALLTIME*/
