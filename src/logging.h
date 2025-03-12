@@ -16,7 +16,18 @@ with FreeVT3k. If not, see <https://www.gnu.org/licenses/>.
 */
 
 /************************************************************
- * dumpbuf.h -- dump buffer to file for debugging
+ * logging.h -- logging functions
  ************************************************************/
 
+#include <stdbool.h>
+
+#define LOG_INPUT               (0x01)
+#define LOG_OUTPUT              (0x02)
+#define LOG_PREFIX              (0x04)
+
 void DumpBuffer(void *buf, long buf_len, char *dump_id);
+int ParseLogMask(char *optarg);
+int LogOpen (char *log_file, int log_mask_);
+void Logit (int log_type, char *ptr, size_t len, bool special_dc1);
+int IsLogging(void);
+

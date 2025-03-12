@@ -32,8 +32,9 @@ with FreeVT3k. If not, see <https://www.gnu.org/licenses/>.
 #include <netinet/in.h>
 
 #include "freevt3k.h"
+#include "hpterm.h"
 #include "vtconn.h"
-#include "dumpbuf.h"
+#include "logging.h"
 
 /* Circular VT queue parms */
 #define MAX_VT_QUEUE		(kVT_MAX_BUFFER)
@@ -406,11 +407,6 @@ static char VT100LineDraw(char ch)
 
 void vt3kHPtoVT100(int32_t refCon, char *buf, size_t buf_len)
 { /*vt3kHPtoVT100*/
-
-#define	ASC_SO			(0x0E)
-#define	ASC_SI			(0x0F)
-#define	ASC_DC1			(0x11)
-#define	ASC_ESC			(0x1B)
   int
     i = 0,
     row_position = 1,
@@ -797,11 +793,6 @@ void vt3kHPtoVT100(int32_t refCon, char *buf, size_t buf_len)
 
 void vt3kHPtoGeneric(int32_t refCon, char *buf, size_t buf_len)
 { /*vt3kHPtoGeneric*/
-
-#define	ASC_SO			(0x0E)
-#define	ASC_SI			(0x0F)
-#define	ASC_DC1			(0x11)
-#define	ASC_ESC			(0x1B)
   int
     i = 0,
     row_position = 1,
@@ -1122,11 +1113,6 @@ void vt3kHPtoGeneric(int32_t refCon, char *buf, size_t buf_len)
 
 void vt3kHPtoVT52(int32_t refCon, char *buf, size_t buf_len)
 { /*vt3kHPtoVT52*/
-
-#define	ASC_SO			(0x0E)
-#define	ASC_SI			(0x0F)
-#define	ASC_DC1			(0x11)
-#define	ASC_ESC			(0x1B)
   int
     i = 0,
     row_position = 1,

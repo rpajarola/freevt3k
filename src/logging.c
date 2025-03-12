@@ -16,7 +16,7 @@ with FreeVT3k. If not, see <https://www.gnu.org/licenses/>.
 */
 
 /************************************************************
- * dumpbuf.c -- dump buffer to file for debugging
+ * logging.c -- logging functions
  ************************************************************/
 
 #include <stdio.h>
@@ -24,10 +24,24 @@ with FreeVT3k. If not, see <https://www.gnu.org/licenses/>.
 #include <string.h>
 #include <ctype.h>
 
-#include "dumpbuf.h"
+#include "logging.h"
+#include "hpterm.h"
 
 FILE
+    *logFd = NULL;
+int
+    log_mask = 0;
+FILE
 	*debug_fd = NULL;
+
+static char *asc_logvalue[] =
+{
+  "<nul>", "<soh>", "<stx>", "<etx>", "<eot>", "<enq>", "<ack>",
+  "<bel>", "<bs>", "<ht>", "<lf>", "<vt>", "<ff>", "<cr>",
+  "<so>", "<si>", "<dle>", "<dc1>", "<dc2>", "<dc3>", "<dc4>",
+  "<nak>", "<syn>", "<etb>", "<can>", "<em>", "<sub>", "<esc>",
+  "<fs>", "<gs>", "<rs>", "<us>", "<del>"
+};
 
 void DumpBuffer(void *buf, long buf_len, char *dump_id)
 { /*DumpBuffer*/
@@ -99,3 +113,94 @@ void DumpBuffer(void *buf, long buf_len, char *dump_id)
     fflush(debug_fd);
     
 } /*DumpBuffer*/
+
+int ParseLogMask(char *optarg) {
+  int log_mask = 0;
+  while (*optarg) {
+    switch (*optarg) {
+    case 'i':
+      log_mask |= LOG_INPUT;
+      break;
+    case 'o':
+      log_mask |= LOG_OUTPUT;
+      break;
+    case 'p':
+      log_mask |= LOG_PREFIX;
+      break;
+    case 0:
+      break;
+    default:
+      return -1;
+    }
+    optarg++;
+  }
+  return log_mask;
+}
+
+int LogOpen (char *log_file, int log_mask_)
+{ /*LogOpen*/
+  log_mask = log_mask_;
+  if (!log_file) {
+    if (log_mask != 0) {
+      logFd = stdout;
+    }
+    return 0;
+  }
+
+  if ((logFd = fopen(log_file, "w")) == (FILE*)NULL)
+  {
+    perror("fopen");
+    return 1;
+  }
+  return 0;
+} /*LogOpen*/
+
+void Logit (int log_type, char *ptr, size_t len, bool special_dc1)
+{ /*Logit*/
+  if (logFd == NULL)
+    return;
+  if (!(log_mask & log_type)) {
+    return;
+  }
+  if (log_mask & LOG_PREFIX) {
+    switch (log_type) {
+    case LOG_INPUT:
+      fprintf (logFd, "in:  ");
+      break;
+    case LOG_OUTPUT:
+      fprintf (logFd, "out: ");
+      break;
+    default:
+      fprintf (logFd, "???: ");
+    }
+  }
+
+  while (len--)
+    {
+      if (((int) *ptr < 32) || ((int) *ptr == 127))
+	{
+	  int index = (int) *ptr;
+	  if (index == 127)
+	    index = 33;
+	  fprintf (logFd, "%s", asc_logvalue[index]);
+	  if (index == ASC_LF)
+	    putc ('\n', logFd);
+	}
+      else
+	putc ((int)*ptr, logFd);
+
+      if (special_dc1 && (*ptr == ASC_DC1))	/* Ugh */
+	putc ('\n', logFd);
+
+      ++ptr;
+    }
+
+  putc ('\n', logFd);
+
+  fflush (logFd);
+
+} /* Logit */
+
+int IsLogging() {
+  return log_mask;
+}

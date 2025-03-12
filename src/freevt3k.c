@@ -60,9 +60,10 @@ typedef struct termio TERMIO, *PTERMIO;
 
 #include "vt.h"
 #include "freevt3k.h"
+#include "hpterm.h"
 #include "hpvt100.h"
 #include "vtconn.h"
-#include "dumpbuf.h"
+#include "logging.h"
 #include "timers.h"
 
 /* Useful macros */
@@ -105,25 +106,6 @@ bool
 TERMIO
 	old_termios;
 
-#define ASC_BS			(0x08)
-#define ASC_LF			(0x0A)
-#define ASC_CR			(0x0D)
-#define ASC_DC1			(0x11)
-#define ASC_DC2			(0x12)
-#define ASC_CAN			(0x18)
-#define ASC_EM			(0x19)
-#define ASC_ESC			(0x1B)
-#define ASC_RS			(0x1E)
-
-static char *asc_logvalue[] =
-{
-  "<nul>", "<soh>", "<stx>", "<etx>", "<eot>", "<enq>", "<ack>",
-  "<bel>", "<bs>", "<ht>", "<lf>", "<vt>", "<ff>", "<cr>",
-  "<so>", "<si>", "<dle>", "<dc1>", "<dc2>", "<dc3>", "<dc4>",
-  "<nak>", "<syn>", "<etb>", "<can>", "<em>", "<sub>", "<esc>",
-  "<fs>", "<gs>", "<rs>", "<us>", "<del>"
-};
-
 /* Current line awaiting send to satisfy an FREAD request */
 #define MAX_INPUT_REC		(kVT_MAX_BUFFER)
 char
@@ -154,12 +136,6 @@ int
 unsigned char
 	in_table[256],
 	out_table[256];
-
-/* Logging stuff */
-FILE
-	*logFd = NULL;
-int
-	log_type = 0;
 
 /* Miscellaneous stuff */
 bool
@@ -232,56 +208,7 @@ void DisplayHex(void *buf, int buf_len, char *dump_id)
     
 } /*DisplayHex*/
 #endif /*DEBUG_TRANSLATE_TABLE*/
-
-void Logit (int typ, char *ptr, size_t len, bool special_dc1)
-{ /*Logit*/
 
-#ifdef XHPTERM
-  extern int
-    logging;
-
-  if (!logging)
-    return;
-#endif /*XHPTERM*/
-
-  if (log_type & LOG_PREFIX)
-    {
-      if (typ == LOG_INPUT)
-	fprintf (logFd, "in:  ");
-
-      else if (typ == LOG_OUTPUT)
-	fprintf (logFd, "out: ");
-
-      else 
-	fprintf (logFd, "???: ");
-    } 
-
-  while (len--)
-    {
-      if (((int) *ptr < 32) || ((int) *ptr == 127))
-	{
-	  int index = (int) *ptr;
-	  if (index == 127)
-	    index = 33;
-	  fprintf (logFd, "%s", asc_logvalue[index]);
-	  if (index == ASC_LF)
-	    putc ('\n', logFd);
-	}
-      else
-	putc ((int)*ptr, logFd);
-
-      if (special_dc1 && (*ptr == ASC_DC1))	/* Ugh */
-	putc ('\n', logFd);
-
-      ++ptr;
-    }
-
-  putc ('\n', logFd);
-
-  fflush (logFd);
-
-} /* Logit */
-
 #ifndef XHPTERM
 void PrintUsage(int detail)
 { /*PrintUsage*/
@@ -755,7 +682,6 @@ int ProcessQueueToHost(tVTConnection *conn, ssize_t len)
 		    }
 		}
 
-	      if (log_type & LOG_INPUT)
 		Logit (LOG_INPUT, input_rec, input_rec_len, false);
 		    
 	      break;
@@ -1228,8 +1154,7 @@ Last:
 void vt3kDataOutProc(int32_t refCon, char * buffer, size_t bufferLength)
 { /*vt3kDataOutProc*/
 
-  if (log_type & LOG_OUTPUT) 
-    Logit (LOG_OUTPUT, buffer, bufferLength, true);
+  Logit (LOG_OUTPUT, buffer, bufferLength, true);
 
   if (write(STDOUT_FILENO, buffer, bufferLength)) {}
 } /*vt3kDataOutProc*/
@@ -1251,6 +1176,7 @@ int main(int argc, char *argv[])
     parm_error = false;
   int
     vtError,
+    log_mask = 0,
     returnValue = 0;
   char
     messageBuffer[128],
@@ -1377,21 +1303,11 @@ int main(int argc, char *argv[])
 	{
 	  ptr = *argv;
 	  ptr += 2;
-	  while (*ptr)
-	    {
-	      if (*ptr == 'i')
-		log_type |= LOG_INPUT;
-	      else if (*ptr == 'o')
-		log_type |= LOG_OUTPUT;
-	      else if (*ptr == 'p')
-		log_type |= LOG_PREFIX;
-	      else
-		{
-		  parm_error = true;
-		  break;
-		}
-	      ++ptr;
-	    }
+      log_mask = ParseLogMask(ptr);
+      if (log_mask == -1) {
+        parm_error = true;
+        break;
+      }
 	}
       else if ((!strcmp(*argv, "-B")) ||
 	       (!strcmp(*argv, "-breaks")))
@@ -1458,17 +1374,9 @@ int main(int argc, char *argv[])
       return(2);
     }
 
-  if (log_file)
-    {
-      if ((logFd = fopen(log_file, "w")) == (FILE*)NULL)
-	{
-	  perror("fopen");
-	  return(1);
-	}
-    }
-/* vt3k doesn't work this way, although documented to do so */
-  else if (log_type != 0)
-    logFd = stdout;
+  if (LogOpen(log_file, log_mask) != 0) {
+    return 1;
+  }
 
   if (input_file)
     {

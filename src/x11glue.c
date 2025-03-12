@@ -79,6 +79,7 @@ with FreeVT3k. If not, see <https://www.gnu.org/licenses/>.
 #include "x11glue.h"
 #include "conmgr.h"
 #include "hpterm.h"
+#include "logging.h"
 #include "vtconn.h"
 #include "terminal.bm"
 
@@ -118,7 +119,6 @@ void getGC(Window win, GC * gc, XFontStruct * font_info);
 void getGC_Inverse(Window win, GC * gc, XFontStruct * font_info);
 void getGC_Halfbright(Window win, GC * gc, XFontStruct * font_info);
 void getGC_Red(Window win, GC * gc, XFontStruct * font_info);
-void Logit(int typ, char *ptr, size_t len, bool special_dc1);
 int LoadKeybdTable(char *file_name, int i_type);
 /*******************************************************************/
 #define GRAY_INDEX 0
@@ -879,7 +879,7 @@ void Usage (void)
 int main (int argc, char **argv)
 {
   int
-    use_rlogin = 0, display_fns = 0, speed = 9600, parm_error = 0;
+    use_rlogin = 0, display_fns = 0, speed = 9600, parm_error = 0, log_mask = 0;
   char
    parity = 'N', *input_file = NULL, *hostname = NULL, *log_file = NULL, *ttyname = NULL;
   int
@@ -888,12 +888,6 @@ int main (int argc, char **argv)
   char *font1 = NULL;
   char *wintitle = NULL;
   char *wtprefix = "FreeVT3K Terminal Emulator";
-
-  /* init the logging stuff... *//* 970107 */
-
-  logFd = stdout;		/* 970107 */
-  log_type = 0;			/* 970107 */
-  logging = 0;			/* 970107 */
 
   /* Start the datacomm module */
   ++argv;
@@ -991,21 +985,10 @@ int main (int argc, char **argv)
       char *ptr;
       ptr = *argv;
       ptr += 2;
-      while (*ptr)
-      {
-	if (*ptr == 'i')
-	  log_type |= LOG_INPUT;
-	else if (*ptr == 'o')
-	  log_type |= LOG_OUTPUT;
-	else if (*ptr == 'p')
-	  log_type |= LOG_PREFIX;
-	else
-	{
-	  ++parm_error;
-	  break;
-	}
-	logging = 1;
-	++ptr;
+      log_mask = ParseLogMask(ptr);
+      if (log_mask == -1) {
+        ++parm_error;
+        break;
       }
     }
     else if ((strcmp(*argv, "-X") == 0) ||
@@ -1121,12 +1104,8 @@ int main (int argc, char **argv)
     fclose (input);
   }
 
-  if (log_file == NULL)
-    logFd = stdout;
-  else if ((logFd = fopen (log_file, "w")) == (FILE *) NULL)
-  {
-    perror ("fopen of log_file");
-    return (1);
+  if (LogOpen(log_file, log_mask) != 0) {
+    return 1;
   }
 
   if (ttyname)

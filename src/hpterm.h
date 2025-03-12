@@ -66,6 +66,25 @@ enum ks
 #define HPTERM_START_TX_ONLY 0x40
 #define HPTERM_END_FIELD 0x80
 /*********************************************************************/
+/*
+ ** special characters
+ */
+#define ASC_ENQ 0x05
+#define ASC_ACK 0x06
+#define ASC_BEL 0x07
+#define ASC_BS  0x08
+#define ASC_HT  0x09
+#define ASC_LF  0x0A
+#define ASC_CR  0x0D
+#define ASC_SO  0x0E
+#define ASC_SI  0x0F
+#define ASC_DC1 0x11
+#define ASC_DC2 0x12
+#define ASC_CAN 0x18
+#define ASC_EM  0x18
+#define ASC_ESC 0x1B
+#define ASC_RS  0x1E
+/*********************************************************************/
 struct hpterm
 {
 /*

@@ -37,7 +37,7 @@ with FreeVT3k. If not, see <https://www.gnu.org/licenses/>.
 #include <fcntl.h>
 #include <errno.h>
 
-#include "dumpbuf.h"
+#include "logging.h"
 #include "vt3kglue.h"
 
 extern int

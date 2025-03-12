@@ -99,12 +99,12 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_freevt3k_OBJECTS = dumpbuf.$(OBJEXT) freevt3k.$(OBJEXT) \
+am_freevt3k_OBJECTS = logging.$(OBJEXT) freevt3k.$(OBJEXT) \
 	hpvt100.$(OBJEXT) timers.$(OBJEXT) vtconn.$(OBJEXT)
 freevt3k_OBJECTS = $(am_freevt3k_OBJECTS)
 freevt3k_LDADD = $(LDADD)
 am_xhpterm_OBJECTS = xhpterm-conmgr.$(OBJEXT) \
-	xhpterm-dumpbuf.$(OBJEXT) xhpterm-freevt3k.$(OBJEXT) \
+	xhpterm-logging.$(OBJEXT) xhpterm-freevt3k.$(OBJEXT) \
 	xhpterm-getcolor.$(OBJEXT) xhpterm-hpterm.$(OBJEXT) \
 	xhpterm-hpvt100.$(OBJEXT) xhpterm-rlogin.$(OBJEXT) \
 	xhpterm-timers.$(OBJEXT) xhpterm-tty.$(OBJEXT) \
@@ -129,15 +129,15 @@ am__v_at_1 =
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/scripts/depcomp
 am__maybe_remake_depfiles = depfiles
-am__depfiles_remade = ./$(DEPDIR)/dumpbuf.Po ./$(DEPDIR)/freevt3k.Po \
-	./$(DEPDIR)/hpvt100.Po ./$(DEPDIR)/timers.Po \
+am__depfiles_remade = ./$(DEPDIR)/freevt3k.Po ./$(DEPDIR)/hpvt100.Po \
+	./$(DEPDIR)/logging.Po ./$(DEPDIR)/timers.Po \
 	./$(DEPDIR)/vtconn.Po ./$(DEPDIR)/xhpterm-conmgr.Po \
-	./$(DEPDIR)/xhpterm-dumpbuf.Po ./$(DEPDIR)/xhpterm-freevt3k.Po \
+	./$(DEPDIR)/xhpterm-freevt3k.Po \
 	./$(DEPDIR)/xhpterm-getcolor.Po ./$(DEPDIR)/xhpterm-hpterm.Po \
-	./$(DEPDIR)/xhpterm-hpvt100.Po ./$(DEPDIR)/xhpterm-rlogin.Po \
-	./$(DEPDIR)/xhpterm-timers.Po ./$(DEPDIR)/xhpterm-tty.Po \
-	./$(DEPDIR)/xhpterm-vt3kglue.Po ./$(DEPDIR)/xhpterm-vtconn.Po \
-	./$(DEPDIR)/xhpterm-x11glue.Po
+	./$(DEPDIR)/xhpterm-hpvt100.Po ./$(DEPDIR)/xhpterm-logging.Po \
+	./$(DEPDIR)/xhpterm-rlogin.Po ./$(DEPDIR)/xhpterm-timers.Po \
+	./$(DEPDIR)/xhpterm-tty.Po ./$(DEPDIR)/xhpterm-vt3kglue.Po \
+	./$(DEPDIR)/xhpterm-vtconn.Po ./$(DEPDIR)/xhpterm-x11glue.Po
 am__mv = mv -f
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -280,8 +280,8 @@ top_srcdir = @top_srcdir@
 AM_CFLAGS = -O2 @X_CFLAGS@
 xhpterm_LDADD = @X_LIBS@ -lX11
 xhpterm_CFLAGS = -DXHPTERM $(AM_CFLAGS)
-freevt3k_SOURCES = dumpbuf.c dumpbuf.h freevt3k.c freevt3k.h hpvt100.c hpvt100.h timers.c timers.h vtconn.c vtconn.h vt.h
-xhpterm_SOURCES = conmgr.c conmgr.h dumpbuf.c dumpbuf.h freevt3k.c freevt3k.h getcolor.c hpterm.c hpterm.h hpvt100.c hpvt100.h rlogin.c rlogin.h timers.c timers.h tty.c tty.h vt3kglue.c vt3kglue.h vtconn.c vtconn.h vt.h x11glue.c x11glue.h
+freevt3k_SOURCES = logging.c logging.h freevt3k.c freevt3k.h hpvt100.c hpvt100.h timers.c timers.h vtconn.c vtconn.h vt.h
+xhpterm_SOURCES = conmgr.c conmgr.h logging.c logging.h freevt3k.c freevt3k.h getcolor.c hpterm.c hpterm.h hpvt100.c hpvt100.h rlogin.c rlogin.h timers.c timers.h tty.c tty.h vt3kglue.c vt3kglue.h vtconn.c vtconn.h vt.h x11glue.c x11glue.h
 MAINTAINERCLEANFILES = Makefile.in
 all: all-am
 
@@ -373,17 +373,17 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dumpbuf.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/freevt3k.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hpvt100.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/logging.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/timers.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/vtconn.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xhpterm-conmgr.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xhpterm-dumpbuf.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xhpterm-freevt3k.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xhpterm-getcolor.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xhpterm-hpterm.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xhpterm-hpvt100.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xhpterm-logging.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xhpterm-rlogin.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xhpterm-timers.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xhpterm-tty.Po@am__quote@ # am--include-marker
@@ -427,19 +427,19 @@ xhpterm-conmgr.obj: conmgr.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(xhpterm_CFLAGS) $(CFLAGS) -c -o xhpterm-conmgr.obj `if test -f 'conmgr.c'; then $(CYGPATH_W) 'conmgr.c'; else $(CYGPATH_W) '$(srcdir)/conmgr.c'; fi`
 
-xhpterm-dumpbuf.o: dumpbuf.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(xhpterm_CFLAGS) $(CFLAGS) -MT xhpterm-dumpbuf.o -MD -MP -MF $(DEPDIR)/xhpterm-dumpbuf.Tpo -c -o xhpterm-dumpbuf.o `test -f 'dumpbuf.c' || echo '$(srcdir)/'`dumpbuf.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/xhpterm-dumpbuf.Tpo $(DEPDIR)/xhpterm-dumpbuf.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dumpbuf.c' object='xhpterm-dumpbuf.o' libtool=no @AMDEPBACKSLASH@
+xhpterm-logging.o: logging.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(xhpterm_CFLAGS) $(CFLAGS) -MT xhpterm-logging.o -MD -MP -MF $(DEPDIR)/xhpterm-logging.Tpo -c -o xhpterm-logging.o `test -f 'logging.c' || echo '$(srcdir)/'`logging.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/xhpterm-logging.Tpo $(DEPDIR)/xhpterm-logging.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='logging.c' object='xhpterm-logging.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(xhpterm_CFLAGS) $(CFLAGS) -c -o xhpterm-dumpbuf.o `test -f 'dumpbuf.c' || echo '$(srcdir)/'`dumpbuf.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(xhpterm_CFLAGS) $(CFLAGS) -c -o xhpterm-logging.o `test -f 'logging.c' || echo '$(srcdir)/'`logging.c
 
-xhpterm-dumpbuf.obj: dumpbuf.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(xhpterm_CFLAGS) $(CFLAGS) -MT xhpterm-dumpbuf.obj -MD -MP -MF $(DEPDIR)/xhpterm-dumpbuf.Tpo -c -o xhpterm-dumpbuf.obj `if test -f 'dumpbuf.c'; then $(CYGPATH_W) 'dumpbuf.c'; else $(CYGPATH_W) '$(srcdir)/dumpbuf.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/xhpterm-dumpbuf.Tpo $(DEPDIR)/xhpterm-dumpbuf.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dumpbuf.c' object='xhpterm-dumpbuf.obj' libtool=no @AMDEPBACKSLASH@
+xhpterm-logging.obj: logging.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(xhpterm_CFLAGS) $(CFLAGS) -MT xhpterm-logging.obj -MD -MP -MF $(DEPDIR)/xhpterm-logging.Tpo -c -o xhpterm-logging.obj `if test -f 'logging.c'; then $(CYGPATH_W) 'logging.c'; else $(CYGPATH_W) '$(srcdir)/logging.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/xhpterm-logging.Tpo $(DEPDIR)/xhpterm-logging.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='logging.c' object='xhpterm-logging.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(xhpterm_CFLAGS) $(CFLAGS) -c -o xhpterm-dumpbuf.obj `if test -f 'dumpbuf.c'; then $(CYGPATH_W) 'dumpbuf.c'; else $(CYGPATH_W) '$(srcdir)/dumpbuf.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(xhpterm_CFLAGS) $(CFLAGS) -c -o xhpterm-logging.obj `if test -f 'logging.c'; then $(CYGPATH_W) 'logging.c'; else $(CYGPATH_W) '$(srcdir)/logging.c'; fi`
 
 xhpterm-freevt3k.o: freevt3k.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(xhpterm_CFLAGS) $(CFLAGS) -MT xhpterm-freevt3k.o -MD -MP -MF $(DEPDIR)/xhpterm-freevt3k.Tpo -c -o xhpterm-freevt3k.o `test -f 'freevt3k.c' || echo '$(srcdir)/'`freevt3k.c
@@ -708,17 +708,17 @@ clean: clean-am
 clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-am
-		-rm -f ./$(DEPDIR)/dumpbuf.Po
-	-rm -f ./$(DEPDIR)/freevt3k.Po
+		-rm -f ./$(DEPDIR)/freevt3k.Po
 	-rm -f ./$(DEPDIR)/hpvt100.Po
+	-rm -f ./$(DEPDIR)/logging.Po
 	-rm -f ./$(DEPDIR)/timers.Po
 	-rm -f ./$(DEPDIR)/vtconn.Po
 	-rm -f ./$(DEPDIR)/xhpterm-conmgr.Po
-	-rm -f ./$(DEPDIR)/xhpterm-dumpbuf.Po
 	-rm -f ./$(DEPDIR)/xhpterm-freevt3k.Po
 	-rm -f ./$(DEPDIR)/xhpterm-getcolor.Po
 	-rm -f ./$(DEPDIR)/xhpterm-hpterm.Po
 	-rm -f ./$(DEPDIR)/xhpterm-hpvt100.Po
+	-rm -f ./$(DEPDIR)/xhpterm-logging.Po
 	-rm -f ./$(DEPDIR)/xhpterm-rlogin.Po
 	-rm -f ./$(DEPDIR)/xhpterm-timers.Po
 	-rm -f ./$(DEPDIR)/xhpterm-tty.Po
@@ -770,17 +770,17 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-		-rm -f ./$(DEPDIR)/dumpbuf.Po
-	-rm -f ./$(DEPDIR)/freevt3k.Po
+		-rm -f ./$(DEPDIR)/freevt3k.Po
 	-rm -f ./$(DEPDIR)/hpvt100.Po
+	-rm -f ./$(DEPDIR)/logging.Po
 	-rm -f ./$(DEPDIR)/timers.Po
 	-rm -f ./$(DEPDIR)/vtconn.Po
 	-rm -f ./$(DEPDIR)/xhpterm-conmgr.Po
-	-rm -f ./$(DEPDIR)/xhpterm-dumpbuf.Po
 	-rm -f ./$(DEPDIR)/xhpterm-freevt3k.Po
 	-rm -f ./$(DEPDIR)/xhpterm-getcolor.Po
 	-rm -f ./$(DEPDIR)/xhpterm-hpterm.Po
 	-rm -f ./$(DEPDIR)/xhpterm-hpvt100.Po
+	-rm -f ./$(DEPDIR)/xhpterm-logging.Po
 	-rm -f ./$(DEPDIR)/xhpterm-rlogin.Po
 	-rm -f ./$(DEPDIR)/xhpterm-timers.Po
 	-rm -f ./$(DEPDIR)/xhpterm-tty.Po

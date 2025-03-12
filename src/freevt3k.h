@@ -25,10 +25,6 @@ with FreeVT3k. If not, see <https://www.gnu.org/licenses/>.
 
 #define VERSION_ID "1.0"
 
-#define LOG_INPUT		(0x01)
-#define LOG_OUTPUT		(0x02)
-#define LOG_PREFIX              (0x04)
-
 extern int debug;
 
 int PutImmediateQ(char ch);

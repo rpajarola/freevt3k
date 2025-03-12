@@ -55,23 +55,13 @@ with FreeVT3k. If not, see <https://www.gnu.org/licenses/>.
 
 #include "hpterm.h"
 #include "conmgr.h"
+#include "logging.h"
 #include "x11glue.h"
 #include "freevt3k.h"
 
 extern struct conmgr *con;
 extern int logging;
 extern char *termid;		/*990121 */
-
-#define ASC_ENQ 0x05
-#define ASC_ACK 0x06
-#define ASC_BEL 0x07
-#define ASC_BS  0x08
-#define ASC_HT  0x09
-#define ASC_LF  0x0A
-#define ASC_CR  0x0D
-#define ASC_DC1 0x11
-#define ASC_DC2 0x12
-#define ASC_ESC 0x1B
 
 static void do_function_button (int);	/* Forward */
 static void update_labels (void);	/* Forward */
@@ -481,7 +471,7 @@ void show_device_control (void)
   term->menu1->nbchars = strlen (m1);
   term->menu2->nbchars = strlen (m2);
 
-  if (logging && (log_type != 0))
+  if (IsLogging())
     term->menu2->text[7] = '*';	/* 970107 */
 
 }
@@ -2893,8 +2883,7 @@ void hpterm_rxfunc (void *ptr, char *buf, size_t nbuf)
  */
   int ii;
 
-  if (log_type & LOG_OUTPUT)	/* 970107 */
-    Logit (LOG_OUTPUT, buf, nbuf, true);	/* 970107 */
+  Logit (LOG_OUTPUT, buf, nbuf, true);
 
   for (ii = 0; ii < nbuf; ii++)
   {
