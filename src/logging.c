@@ -31,6 +31,10 @@ FILE
     *logFd = NULL;
 int
     log_mask = 0;
+int
+    debug = 0;
+int
+    debug_need_crlf = 0;
 FILE
 	*debug_fd = NULL;
 
@@ -45,7 +49,6 @@ static char *asc_logvalue[] =
 
 void DumpBuffer(void *buf, long buf_len, char *dump_id)
 { /*DumpBuffer*/
-
 #define CHAR_PER_LINE		(16)
     int
 	printOffset = 0,
@@ -63,55 +66,51 @@ void DumpBuffer(void *buf, long buf_len, char *dump_id)
     extern int
 	debug_need_crlf;
 
-    if (debug_fd == (FILE*)NULL)
-	{
-	debug_fd = fopen("freevt3k.debug", "w");
-	if (debug_fd == (FILE*)NULL)
-	    debug_fd = stderr;
-	}
+    if (debug == 0)
+        return;
+    if (debug_fd == NULL) {
+	    debug_fd = fopen("freevt3k.debug", "w");
+        if (debug_fd == NULL) {
+            perror("fopen(freevt3k.debug");
+            return;
+        }
+   	}
 
-    if (debug_need_crlf)
-	{
-	debug_need_crlf = 0;
-	fprintf(debug_fd, "\n");
+    if (debug_need_crlf) {
+	    debug_need_crlf = 0;
+	    fprintf(debug_fd, "\n");
 	}
     fprintf(debug_fd, "[ %s ]\n", dump_id);
-    if (buf_len < 0)
-	{
-	buf_len = -buf_len;
-	printOffset = 1;
+    if (buf_len < 0) {
+	    buf_len = -buf_len;
+	    printOffset = 1;
 	}
+
     nLines = buf_len / CHAR_PER_LINE;
     charPtr = (unsigned char*)buf;
-    for (iLine = 0; iLine <= nLines; iLine++)
-	{
-	if (iLine == nLines)
-	    nChars = buf_len % CHAR_PER_LINE;
-	memset((void*)msg, ' ', 80);
-	ptr = &msg[(CHAR_PER_LINE * 3) + 2];
-	msgPtr = msg;
-	for (iChar = 0; iChar < nChars; iChar++)
-	    {
-	    sprintf((char*)msgPtr, "%02x ", *charPtr);
-	    msgPtr += 3;
-	    *msgPtr = ' ';
-	    *ptr = (unsigned char)
-		((isprint(*charPtr) && isascii(*charPtr)) ? *charPtr : '#');
-	    ++charPtr;
-	    *(++ptr) = '\0';
-	    }
-	if (nChars > 0)
-	    {
-	    if (printOffset)
-		{
-		fprintf(debug_fd, "%04X: ", offset);
-		offset += CHAR_PER_LINE;
-		}
-	    fprintf(debug_fd, "%s\n", msg);
-	    }
-	}
+    for (iLine = 0; iLine <= nLines; iLine++) {
+        if (iLine == nLines)
+            nChars = buf_len % CHAR_PER_LINE;
+        memset((void*)msg, ' ', 80);
+        ptr = &msg[(CHAR_PER_LINE * 3) + 2];
+        msgPtr = msg;
+        for (iChar = 0; iChar < nChars; iChar++) {
+            sprintf((char*)msgPtr, "%02x ", *charPtr);
+            msgPtr += 3;
+            *msgPtr = ' ';
+            *ptr = (unsigned char)((isprint(*charPtr) && isascii(*charPtr)) ? *charPtr : '#');
+            ++charPtr;
+            *(++ptr) = '\0';
+        }
+        if (nChars > 0) {
+            if (printOffset) {
+                fprintf(debug_fd, "%04X: ", offset);
+                offset += CHAR_PER_LINE;
+            }
+            fprintf(debug_fd, "%s\n", msg);
+        }
+    }
     fflush(debug_fd);
-    
 } /*DumpBuffer*/
 
 int ParseLogMask(char *optarg) {

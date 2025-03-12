@@ -65,7 +65,6 @@ int int_sprintf(char *buf, const char *fmt, ...)
 
 static int GetVTQueue(void)
 { /*GetVTQueue*/
-
   if (!vt_queue_len)
     return(-1);
   if (++vtq_rptr == &vt_queue[MAX_VT_QUEUE])
@@ -73,7 +72,6 @@ static int GetVTQueue(void)
   --vt_queue_len;
   vt_ch = *vtq_rptr;
   return(0);
-    
 } /*GetVTQueue*/
 
 static int PutVTQueue(char ch)
@@ -786,8 +784,7 @@ void vt3kHPtoVT100(int32_t refCon, char *buf, size_t buf_len)
  Do_Write:
   buf_len = out_ptr - out_buf;
   vt3kDataOutProc(refCon, out_buf, buf_len);
-  if (debug)
-    DumpBuffer(out_buf, buf_len, "vt100");
+  DumpBuffer(out_buf, buf_len, "vt100");
 
 } /*vt3kHPtoVT100*/
 
@@ -1106,8 +1103,7 @@ void vt3kHPtoGeneric(int32_t refCon, char *buf, size_t buf_len)
  Do_Write:
   buf_len = out_ptr - out_buf;
   vt3kDataOutProc(refCon, out_buf, buf_len);
-  if (debug)
-    DumpBuffer(out_buf, buf_len, "Generic");
+  DumpBuffer(out_buf, buf_len, "Generic");
 
 } /*vt3kHPtoGeneric*/
 
@@ -1352,8 +1348,7 @@ void vt3kHPtoVT52(int32_t refCon, char *buf, size_t buf_len)
  Do_Write:
   buf_len = out_ptr - out_buf;
   vt3kDataOutProc(refCon, out_buf, buf_len);
-  if (debug)
-    DumpBuffer(out_buf, buf_len, "vt52");
+  DumpBuffer(out_buf, buf_len, "vt52");
 
 } /*vt3kHPtoVT52*/
 

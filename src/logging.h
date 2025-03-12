@@ -25,9 +25,11 @@ with FreeVT3k. If not, see <https://www.gnu.org/licenses/>.
 #define LOG_OUTPUT              (0x02)
 #define LOG_PREFIX              (0x04)
 
+extern int debug;
+extern int debug_need_crlf;
+
 void DumpBuffer(void *buf, long buf_len, char *dump_id);
 int ParseLogMask(char *optarg);
 int LogOpen (char *log_file, int log_mask_);
 void Logit (int log_type, char *ptr, size_t len, bool special_dc1);
 int IsLogging(void);
-

@@ -25,8 +25,6 @@ with FreeVT3k. If not, see <https://www.gnu.org/licenses/>.
 
 #define VERSION_ID "1.0"
 
-extern int debug;
-
 int PutImmediateQ(char ch);
 void vt3kDataOutProc(int32_t refCon, char * buffer, size_t bufferLength);
 
