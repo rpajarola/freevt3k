@@ -100,16 +100,16 @@ CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_freevt3k_OBJECTS = logging.$(OBJEXT) freevt3k.$(OBJEXT) \
-	hpvt100.$(OBJEXT) timers.$(OBJEXT) vtconn.$(OBJEXT) \
-	kbdtable.$(OBJEXT)
+	hpvt100.$(OBJEXT) timers.$(OBJEXT) vtcommon.$(OBJEXT) \
+	vtconn.$(OBJEXT) kbdtable.$(OBJEXT)
 freevt3k_OBJECTS = $(am_freevt3k_OBJECTS)
 freevt3k_LDADD = $(LDADD)
 am_xhpterm_OBJECTS = xhpterm-conmgr.$(OBJEXT) \
-	xhpterm-logging.$(OBJEXT) xhpterm-freevt3k.$(OBJEXT) \
-	xhpterm-getcolor.$(OBJEXT) xhpterm-hpterm.$(OBJEXT) \
-	xhpterm-hpvt100.$(OBJEXT) xhpterm-rlogin.$(OBJEXT) \
-	xhpterm-timers.$(OBJEXT) xhpterm-tty.$(OBJEXT) \
-	xhpterm-vt3kglue.$(OBJEXT) xhpterm-vtconn.$(OBJEXT) \
+	xhpterm-logging.$(OBJEXT) xhpterm-getcolor.$(OBJEXT) \
+	xhpterm-hpterm.$(OBJEXT) xhpterm-hpvt100.$(OBJEXT) \
+	xhpterm-rlogin.$(OBJEXT) xhpterm-timers.$(OBJEXT) \
+	xhpterm-tty.$(OBJEXT) xhpterm-vt3kglue.$(OBJEXT) \
+	xhpterm-vtcommon.$(OBJEXT) xhpterm-vtconn.$(OBJEXT) \
 	xhpterm-x11glue.$(OBJEXT) xhpterm-kbdtable.$(OBJEXT)
 xhpterm_OBJECTS = $(am_xhpterm_OBJECTS)
 xhpterm_DEPENDENCIES =
@@ -132,13 +132,14 @@ depcomp = $(SHELL) $(top_srcdir)/scripts/depcomp
 am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = ./$(DEPDIR)/freevt3k.Po ./$(DEPDIR)/hpvt100.Po \
 	./$(DEPDIR)/kbdtable.Po ./$(DEPDIR)/logging.Po \
-	./$(DEPDIR)/timers.Po ./$(DEPDIR)/vtconn.Po \
-	./$(DEPDIR)/xhpterm-conmgr.Po ./$(DEPDIR)/xhpterm-freevt3k.Po \
+	./$(DEPDIR)/timers.Po ./$(DEPDIR)/vtcommon.Po \
+	./$(DEPDIR)/vtconn.Po ./$(DEPDIR)/xhpterm-conmgr.Po \
 	./$(DEPDIR)/xhpterm-getcolor.Po ./$(DEPDIR)/xhpterm-hpterm.Po \
 	./$(DEPDIR)/xhpterm-hpvt100.Po ./$(DEPDIR)/xhpterm-kbdtable.Po \
 	./$(DEPDIR)/xhpterm-logging.Po ./$(DEPDIR)/xhpterm-rlogin.Po \
 	./$(DEPDIR)/xhpterm-timers.Po ./$(DEPDIR)/xhpterm-tty.Po \
-	./$(DEPDIR)/xhpterm-vt3kglue.Po ./$(DEPDIR)/xhpterm-vtconn.Po \
+	./$(DEPDIR)/xhpterm-vt3kglue.Po \
+	./$(DEPDIR)/xhpterm-vtcommon.Po ./$(DEPDIR)/xhpterm-vtconn.Po \
 	./$(DEPDIR)/xhpterm-x11glue.Po
 am__mv = mv -f
 AM_V_lt = $(am__v_lt_@AM_V@)
@@ -282,8 +283,8 @@ top_srcdir = @top_srcdir@
 AM_CFLAGS = -O2 @X_CFLAGS@
 xhpterm_LDADD = @X_LIBS@ -lX11
 xhpterm_CFLAGS = -DXHPTERM $(AM_CFLAGS)
-freevt3k_SOURCES = logging.c logging.h freevt3k.c freevt3k.h hpvt100.c hpvt100.h timers.c timers.h vtconn.c vtconn.h vt.h kbdtable.c kbdtable.h
-xhpterm_SOURCES = conmgr.c conmgr.h logging.c logging.h freevt3k.c freevt3k.h getcolor.c hpterm.c hpterm.h hpvt100.c hpvt100.h rlogin.c rlogin.h timers.c timers.h tty.c tty.h vt3kglue.c vt3kglue.h vtconn.c vtconn.h vt.h x11glue.c x11glue.h kbdtable.c kbdtable.h
+freevt3k_SOURCES = logging.c logging.h freevt3k.c freevt3k.h hpvt100.c hpvt100.h timers.c timers.h vtcommon.c vtcommon.h vtconn.c vtconn.h vt.h kbdtable.c kbdtable.h
+xhpterm_SOURCES = conmgr.c conmgr.h logging.c logging.h getcolor.c hpterm.c hpterm.h hpvt100.c hpvt100.h rlogin.c rlogin.h timers.c timers.h tty.c tty.h vt3kglue.c vt3kglue.h vtcommon.c vtcommon.h vtconn.c vtconn.h vt.h x11glue.c x11glue.h kbdtable.c kbdtable.h
 MAINTAINERCLEANFILES = Makefile.in
 all: all-am
 
@@ -380,9 +381,9 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kbdtable.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/logging.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/timers.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/vtcommon.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/vtconn.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xhpterm-conmgr.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xhpterm-freevt3k.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xhpterm-getcolor.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xhpterm-hpterm.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xhpterm-hpvt100.Po@am__quote@ # am--include-marker
@@ -392,6 +393,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xhpterm-timers.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xhpterm-tty.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xhpterm-vt3kglue.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xhpterm-vtcommon.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xhpterm-vtconn.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xhpterm-x11glue.Po@am__quote@ # am--include-marker
 
@@ -444,20 +446,6 @@ xhpterm-logging.obj: logging.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='logging.c' object='xhpterm-logging.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(xhpterm_CFLAGS) $(CFLAGS) -c -o xhpterm-logging.obj `if test -f 'logging.c'; then $(CYGPATH_W) 'logging.c'; else $(CYGPATH_W) '$(srcdir)/logging.c'; fi`
-
-xhpterm-freevt3k.o: freevt3k.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(xhpterm_CFLAGS) $(CFLAGS) -MT xhpterm-freevt3k.o -MD -MP -MF $(DEPDIR)/xhpterm-freevt3k.Tpo -c -o xhpterm-freevt3k.o `test -f 'freevt3k.c' || echo '$(srcdir)/'`freevt3k.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/xhpterm-freevt3k.Tpo $(DEPDIR)/xhpterm-freevt3k.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='freevt3k.c' object='xhpterm-freevt3k.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(xhpterm_CFLAGS) $(CFLAGS) -c -o xhpterm-freevt3k.o `test -f 'freevt3k.c' || echo '$(srcdir)/'`freevt3k.c
-
-xhpterm-freevt3k.obj: freevt3k.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(xhpterm_CFLAGS) $(CFLAGS) -MT xhpterm-freevt3k.obj -MD -MP -MF $(DEPDIR)/xhpterm-freevt3k.Tpo -c -o xhpterm-freevt3k.obj `if test -f 'freevt3k.c'; then $(CYGPATH_W) 'freevt3k.c'; else $(CYGPATH_W) '$(srcdir)/freevt3k.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/xhpterm-freevt3k.Tpo $(DEPDIR)/xhpterm-freevt3k.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='freevt3k.c' object='xhpterm-freevt3k.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(xhpterm_CFLAGS) $(CFLAGS) -c -o xhpterm-freevt3k.obj `if test -f 'freevt3k.c'; then $(CYGPATH_W) 'freevt3k.c'; else $(CYGPATH_W) '$(srcdir)/freevt3k.c'; fi`
 
 xhpterm-getcolor.o: getcolor.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(xhpterm_CFLAGS) $(CFLAGS) -MT xhpterm-getcolor.o -MD -MP -MF $(DEPDIR)/xhpterm-getcolor.Tpo -c -o xhpterm-getcolor.o `test -f 'getcolor.c' || echo '$(srcdir)/'`getcolor.c
@@ -556,6 +544,20 @@ xhpterm-vt3kglue.obj: vt3kglue.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='vt3kglue.c' object='xhpterm-vt3kglue.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(xhpterm_CFLAGS) $(CFLAGS) -c -o xhpterm-vt3kglue.obj `if test -f 'vt3kglue.c'; then $(CYGPATH_W) 'vt3kglue.c'; else $(CYGPATH_W) '$(srcdir)/vt3kglue.c'; fi`
+
+xhpterm-vtcommon.o: vtcommon.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(xhpterm_CFLAGS) $(CFLAGS) -MT xhpterm-vtcommon.o -MD -MP -MF $(DEPDIR)/xhpterm-vtcommon.Tpo -c -o xhpterm-vtcommon.o `test -f 'vtcommon.c' || echo '$(srcdir)/'`vtcommon.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/xhpterm-vtcommon.Tpo $(DEPDIR)/xhpterm-vtcommon.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='vtcommon.c' object='xhpterm-vtcommon.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(xhpterm_CFLAGS) $(CFLAGS) -c -o xhpterm-vtcommon.o `test -f 'vtcommon.c' || echo '$(srcdir)/'`vtcommon.c
+
+xhpterm-vtcommon.obj: vtcommon.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(xhpterm_CFLAGS) $(CFLAGS) -MT xhpterm-vtcommon.obj -MD -MP -MF $(DEPDIR)/xhpterm-vtcommon.Tpo -c -o xhpterm-vtcommon.obj `if test -f 'vtcommon.c'; then $(CYGPATH_W) 'vtcommon.c'; else $(CYGPATH_W) '$(srcdir)/vtcommon.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/xhpterm-vtcommon.Tpo $(DEPDIR)/xhpterm-vtcommon.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='vtcommon.c' object='xhpterm-vtcommon.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(xhpterm_CFLAGS) $(CFLAGS) -c -o xhpterm-vtcommon.obj `if test -f 'vtcommon.c'; then $(CYGPATH_W) 'vtcommon.c'; else $(CYGPATH_W) '$(srcdir)/vtcommon.c'; fi`
 
 xhpterm-vtconn.o: vtconn.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(xhpterm_CFLAGS) $(CFLAGS) -MT xhpterm-vtconn.o -MD -MP -MF $(DEPDIR)/xhpterm-vtconn.Tpo -c -o xhpterm-vtconn.o `test -f 'vtconn.c' || echo '$(srcdir)/'`vtconn.c
@@ -731,9 +733,9 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/kbdtable.Po
 	-rm -f ./$(DEPDIR)/logging.Po
 	-rm -f ./$(DEPDIR)/timers.Po
+	-rm -f ./$(DEPDIR)/vtcommon.Po
 	-rm -f ./$(DEPDIR)/vtconn.Po
 	-rm -f ./$(DEPDIR)/xhpterm-conmgr.Po
-	-rm -f ./$(DEPDIR)/xhpterm-freevt3k.Po
 	-rm -f ./$(DEPDIR)/xhpterm-getcolor.Po
 	-rm -f ./$(DEPDIR)/xhpterm-hpterm.Po
 	-rm -f ./$(DEPDIR)/xhpterm-hpvt100.Po
@@ -743,6 +745,7 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/xhpterm-timers.Po
 	-rm -f ./$(DEPDIR)/xhpterm-tty.Po
 	-rm -f ./$(DEPDIR)/xhpterm-vt3kglue.Po
+	-rm -f ./$(DEPDIR)/xhpterm-vtcommon.Po
 	-rm -f ./$(DEPDIR)/xhpterm-vtconn.Po
 	-rm -f ./$(DEPDIR)/xhpterm-x11glue.Po
 	-rm -f Makefile
@@ -795,9 +798,9 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/kbdtable.Po
 	-rm -f ./$(DEPDIR)/logging.Po
 	-rm -f ./$(DEPDIR)/timers.Po
+	-rm -f ./$(DEPDIR)/vtcommon.Po
 	-rm -f ./$(DEPDIR)/vtconn.Po
 	-rm -f ./$(DEPDIR)/xhpterm-conmgr.Po
-	-rm -f ./$(DEPDIR)/xhpterm-freevt3k.Po
 	-rm -f ./$(DEPDIR)/xhpterm-getcolor.Po
 	-rm -f ./$(DEPDIR)/xhpterm-hpterm.Po
 	-rm -f ./$(DEPDIR)/xhpterm-hpvt100.Po
@@ -807,6 +810,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/xhpterm-timers.Po
 	-rm -f ./$(DEPDIR)/xhpterm-tty.Po
 	-rm -f ./$(DEPDIR)/xhpterm-vt3kglue.Po
+	-rm -f ./$(DEPDIR)/xhpterm-vtcommon.Po
 	-rm -f ./$(DEPDIR)/xhpterm-vtconn.Po
 	-rm -f ./$(DEPDIR)/xhpterm-x11glue.Po
 	-rm -f Makefile
