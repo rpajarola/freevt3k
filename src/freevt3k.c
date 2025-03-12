@@ -65,6 +65,7 @@ typedef struct termio TERMIO, *PTERMIO;
 #include "vtconn.h"
 #include "logging.h"
 #include "timers.h"
+#include "kbdtable.h"
 
 /* Useful macros */
 
@@ -126,13 +127,6 @@ char
 	*imm_inq_wptr = imm_input_queue;
 int
 	imm_input_queue_len = 0;
-
-/* Keyboard translate tables */
-int
-	table_spec = 0;
-unsigned char
-	in_table[256],
-	out_table[256];
 
 /* Miscellaneous stuff */
 bool
@@ -244,62 +238,6 @@ void PrintUsage(int detail)
 
 } /*PrintUsage*/
 #endif /*XHPTERM*/
-
-int LoadKeybdTable(char *file_name, int i_type)
-{ /*LoadKeybdTable*/
-
-  char
-    charSpec[256];
-  int
-    i = -1,
-    idx = 0,
-    file_num = 0;
-
-  memset((void*)charSpec,0,256);
-  if ((file_num = open(file_name, O_RDONLY, 0)) == -1)
-    {
-      perror("open");
-      return(1);
-    }
-  if (read(file_num, in_table, 256) != 256)
-    {
-      perror("read");
-      return(1);
-    }
-  close(file_num);
-#ifndef DEBUG_TRANSLATE_TABLE
-  for (i=0; i<32; i++)
-    if (in_table[i] != (unsigned char)i)
-      {
-	fprintf(stderr, "Cannot change the first 32 values\n");
-	return(1);
-      }
-#endif
-
-  if (i_type == 1)
-    {
-      for (i=0; i<256; i++)
-	{
-	  idx = ((int)in_table[i]) & 0x00FF;
-	  if (charSpec[idx])
-	    {
-	      fprintf(stderr, "Translate table contains duplicate entries\n");
-	      return(1);
-	    }
-	  out_table[idx] = (unsigned char)i;
-	  charSpec[idx] = 1;
-	}
-    }
-  else
-    memcpy(out_table, in_table, 256);
-#ifdef DEBUG_TRANSLATE_TABLE
-  DisplayHex(in_table, -256, "in");
-  DisplayHex(out_table, -256, "out");
-#endif
-  table_spec = i_type;
-  return(0);
-    
-} /*LoadKeybdTable*/
 
 #ifndef XHPTERM
 int SetTtyAttributes(int fd, PTERMIO termio_buf)

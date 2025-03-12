@@ -81,6 +81,7 @@ with FreeVT3k. If not, see <https://www.gnu.org/licenses/>.
 #include "hpterm.h"
 #include "logging.h"
 #include "vtconn.h"
+#include "kbdtable.h"
 #include "terminal.bm"
 
 #define DEBUG_KEYSYMS 0
@@ -119,7 +120,6 @@ void getGC(Window win, GC * gc, XFontStruct * font_info);
 void getGC_Inverse(Window win, GC * gc, XFontStruct * font_info);
 void getGC_Halfbright(Window win, GC * gc, XFontStruct * font_info);
 void getGC_Red(Window win, GC * gc, XFontStruct * font_info);
-int LoadKeybdTable(char *file_name, int i_type);
 /*******************************************************************/
 #define GRAY_INDEX 0
 #define RED_INDEX 1
