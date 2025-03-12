@@ -20,6 +20,7 @@ with FreeVT3k. If not, see <https://www.gnu.org/licenses/>.
  ************************************************************/
 
 #include <stdbool.h>
+#include <stdio.h>
 
 #define LOG_INPUT               (0x01)
 #define LOG_OUTPUT              (0x02)
@@ -27,6 +28,7 @@ with FreeVT3k. If not, see <https://www.gnu.org/licenses/>.
 
 extern int debug;
 extern int debug_need_crlf;
+extern FILE *debug_fd;
 
 void DumpBuffer(void *buf, long buf_len, char *dump_id);
 int ParseLogMask(char *optarg);
