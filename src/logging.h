@@ -26,6 +26,14 @@ with FreeVT3k. If not, see <https://www.gnu.org/licenses/>.
 #define LOG_OUTPUT              (0x02)
 #define LOG_PREFIX              (0x04)
 
+#define DEBUG_PRINT_CH(x) { \
+  if (isprint(x)) \
+    fprintf(debug_fd, "%c", x); \
+  else \
+    fprintf(debug_fd, "\\0x%02x", x); \
+  debug_need_crlf = 1; \
+}
+
 extern int debug;
 extern int debug_need_crlf;
 extern FILE *debug_fd;

@@ -73,14 +73,6 @@ typedef struct termio TERMIO, *PTERMIO;
 #  define MAX(a,b) (((a) > (b)) ? (a) : (b))
 #endif
 
-#define DEBUG_PRINT_CH(x)	{ \
-				if (isprint(x)) \
-				   fprintf(debug_fd, "%c", x); \
-				else \
-				   fprintf(debug_fd, "\\0x%02x", x); \
-				debug_need_crlf = 1; \
-				}
-
 /* Global variables */
 
 #define DFLT_BREAK_MAX		(3)
