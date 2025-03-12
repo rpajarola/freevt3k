@@ -97,9 +97,6 @@ int
 bool
 	done = false,
 	send_break = false;
-int
-	debug = 0,
-	debug_need_crlf = 0;
 bool
 	stop_at_eof = false,
 	type_ahead = false;
@@ -771,9 +768,6 @@ int ProcessSocket(tVTConnection * conn)
 
 int ProcessTTY(tVTConnection * conn, char *buf, ssize_t len)
 {/*ProcessTTY*/
-    
-  extern FILE
-    *debug_fd;
   struct timeval
     timeout;
   ssize_t
